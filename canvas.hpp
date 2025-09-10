@@ -14,6 +14,7 @@ class Canvas{
 		Canvas();
 		~Canvas();
 
-		void PerspectiveProjection(float, float, float);
+		void PerspectiveProjection(float x, float y, float z);
+    void ChangeFOV(float new_fov);
 		void Print();
 };

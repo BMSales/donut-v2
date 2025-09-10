@@ -42,12 +42,19 @@ Canvas::~Canvas(){
 	free(matrix);
 }
 
+void Canvas::ChangeFOV(float new_fov){
+  if(new_fov < 0.0 || new_fov > 180.0){
+    std::cout << "invalid angle" << std::endl;
+    return
+  }
+
+  fov = new_fov;
+	transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
+}
+
 void Canvas::PerspectiveProjection(float x, float y, float z){
 	float proj_x = x * transform/aspect_ratio * z;
 	float proj_y = y * transform/z;
-
-  std::cout << "x " << proj_x << "\n";
-  std::cout << "y " << proj_y << "\n";
 
 	int col = ((proj_x + 1.0)/2.0) * width;
 	int row = ((-proj_y + 1.0)/2.0) * height;
@@ -60,6 +67,6 @@ void Canvas::Print(){
 		for(int j = 0; j < width; j++){
 			std::cout << matrix[i][j];
 		}
-		std::cout << "\n";
+    std::endl;
 	}
 }
