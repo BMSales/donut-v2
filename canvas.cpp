@@ -1,19 +1,17 @@
 #include <iostream>
-#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include "canvas.hpp"
 
-
 #define M_PI 3.14159265358979323846
 
 Canvas::Canvas(){
 	// retrieves the terminal's dimensions
 	struct winsize window;
-	// w.ws_row for rows
-	// w.ws_col for collumns
+	// window.ws_row for rows
+	// window.ws_col for collumns
 	ioctl(STDIN_FILENO, TIOCGWINSZ, &window);
 
 	height = window.ws_row;
@@ -45,7 +43,7 @@ Canvas::~Canvas(){
 void Canvas::ChangeFOV(float new_fov){
   if(new_fov < 0.0 || new_fov > 180.0){
     std::cout << "invalid angle" << std::endl;
-    return
+    return;
   }
 
   fov = new_fov;
