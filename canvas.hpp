@@ -9,6 +9,7 @@ class Canvas{
 		float fov;
 		float aspect_ratio;
 		float transform;
+
 	public:
 		Canvas();
 		~Canvas();

@@ -16,8 +16,8 @@ Canvas::Canvas(){
 	// w.ws_col for collumns
 	ioctl(STDIN_FILENO, TIOCGWINSZ, &window);
 
-	this->height = window.ws_row;
-	this->width = window.ws_col;
+	height = window.ws_row;
+	width = window.ws_col;
 	matrix = (char**)calloc(height, sizeof(char*));
 
 	fov = 90.0;
@@ -43,11 +43,14 @@ Canvas::~Canvas(){
 }
 
 void Canvas::PerspectiveProjection(float x, float y, float z){
-	float proj_x = x * transform * aspect_ratio/z;
-	float proj_y = y * transform * aspect_ratio/z;
+	float proj_x = x * transform/aspect_ratio * z;
+	float proj_y = y * transform/z;
+
+  std::cout << "x " << proj_x << "\n";
+  std::cout << "y " << proj_y << "\n";
 
 	int col = ((proj_x + 1.0)/2.0) * width;
-	int row = ((proj_y + 1.0)/2.0) * height;
+	int row = ((-proj_y + 1.0)/2.0) * height;
 
 	matrix[row][col] = '.';
 }
