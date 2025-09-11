@@ -10,8 +10,8 @@
 Canvas::Canvas(){
 	// retrieves the terminal's dimensions
 	struct winsize window;
-	// window.ws_row for rows
-	// window.ws_col for collumns
+	// w.ws_row for rows
+	// w.ws_col for collumns
 	ioctl(STDIN_FILENO, TIOCGWINSZ, &window);
 
 	height = window.ws_row;
@@ -43,7 +43,6 @@ Canvas::~Canvas(){
 void Canvas::ChangeFOV(float new_fov){
   if(new_fov < 0.0 || new_fov > 180.0){
     std::cout << "invalid angle" << std::endl;
-    return;
   }
 
   fov = new_fov;
@@ -51,20 +50,23 @@ void Canvas::ChangeFOV(float new_fov){
 }
 
 void Canvas::PerspectiveProjection(float x, float y, float z){
-	float proj_x = x * transform/aspect_ratio * z;
+	float proj_x = x * transform/(aspect_ratio * z);
 	float proj_y = y * transform/z;
 
 	int col = ((proj_x + 1.0)/2.0) * width;
 	int row = ((-proj_y + 1.0)/2.0) * height;
 
-	matrix[row][col] = '.';
+  if(col < width && col >= 0 && row < height && row >= 0){
+    matrix[row][col] = '.';
+  }
 }
 
 void Canvas::Print(){
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
 			std::cout << matrix[i][j];
+      matrix[i][j] = ' ';
 		}
-    std::endl;
+		std::cout << "\n";
 	}
 }

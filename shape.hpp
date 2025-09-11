@@ -1,31 +1,18 @@
 #pragma once
 
-#include <stdlib.h>
-#include <math.h>
-
-class Shape(){
-	private:
+class Shape {
+	protected:
 		int num_points;
 		float** points;
+
 	public:
-		Shape(int new_num_points){
-			num_points = new_num_points;
-			points = (float**)calloc(num_points, sizeof(float*));
+		~Shape();
+    void Rotate_X(float angle);
+    void Rotate_Y(float angle);
+    void Rotate_Z(float angle);
+};
 
-			for(int i = 0; i < num_points; i++){
-				points[i] = (float*)calloc(3, sizeof(float));
-			}
-		}
-
-		~Shape(){
-			for(int i = 0; i < num_points; i++){
-				free(points[i]);
-			}
-			free(points);
-		}
-
-		// void torus(float inner_radius, float ring_radius){
-		// 	float 
-		// 	for(
-		// }
-}
+// class Torus : public Shape {
+//   public:
+//
+// }
