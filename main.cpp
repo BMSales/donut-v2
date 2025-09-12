@@ -6,17 +6,15 @@
 
 int main(){
 	Canvas canvas = Canvas();
-  float x = 0.0;
-  float y = 0.0;
-  float z = 100.0;
+  float vertex_1[3] = {0.0, 50.0, 100.0};
+  float vertex_2[3] = {50.0, -50.0, 100.0};
+  float vertex_3[3] = {-50.0, -50.0, 100.0};
 
-  while(1){
-    canvas.PerspectiveProjection(x, y, z);
+  // while(1){
+    canvas.PerspectiveProjection(vertex_1, vertex_2, vertex_3);
     canvas.Print();
     usleep(16*1000);
-    system("clear");
-    x += 0.5;
-    y += 0.5;
-  }
+    // system("clear");
+  // }
 }
 
