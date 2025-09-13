@@ -44,6 +44,7 @@ Canvas::~Canvas(){
 void Canvas::ChangeFOV(float new_fov){
   if(new_fov < 0.0 || new_fov > 180.0){
     std::cout << "invalid angle" << std::endl;
+    return;
   }
 
   fov = new_fov;
