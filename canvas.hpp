@@ -10,12 +10,13 @@ class Canvas{
 		float aspect_ratio;
 		float transform;
 
+    void ScreenSpacePerspectiveProjection(float vertex[3], int screen_space_vertex[][2]);
 
 	public:
 		Canvas();
 		~Canvas();
 
-		void DrawTriangle(float* vertex_1, float* vertex_2, float* vertex_3);
+		void DrawTriangle(float vertex_1[3], float vertex_2[3], float vertex_3[3]);
     void ChangeFOV(float new_fov);
 		void Print();
-};
+  };

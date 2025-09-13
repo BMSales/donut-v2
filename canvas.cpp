@@ -42,9 +42,9 @@ Canvas::~Canvas(){
 }
 
 void Canvas::ChangeFOV(float new_fov){
-  if(new_fov < 0.0 || new_fov > 180.0){
+  if(new_fov <= 0.0 || new_fov >= 180.0){
     std::cout << "invalid angle" << std::endl;
-    return;
+    exit(-1);
   }
 
   fov = new_fov;
@@ -59,6 +59,9 @@ int DotProduct(int A[2], int B[2], int P[2]){
   vector_AB[0] = B[0] - A[0];
   vector_AB[1] = B[1] - A[1];
 
+  // rotate AB to determine if P is on the right side 
+  // or the left side of AB
+  // the rotation is done according to screen space
   swap = vector_AB[0];
   vector_AB[0] = -vector_AB[1];
   vector_AB[1] = swap;
@@ -69,39 +72,44 @@ int DotProduct(int A[2], int B[2], int P[2]){
   return vector_AB[0] * vector_AP[0] + vector_AB[1] * vector_AP[1];
 }
 
-void Canvas::DrawTriangle(float* vertex_1, float* vertex_2, float* vertex_3){
+bool IsInTriangle(int vertex_1[2], int vertex_2[2], int vertex_3[2], int position[2]){
+  int AB = DotProduct(vertex_1, vertex_2, position);
+  int BC = DotProduct(vertex_2, vertex_3, position);
+  int CA = DotProduct(vertex_3, vertex_1, position);
 
-  float view_space_vertex_1[2];
-  float view_space_vertex_2[2];
-  float view_space_vertex_3[2];
+  if(AB >= 0 && BC >= 0 && CA >= 0){
+    return true;
+  }
 
+  return false;
+}
+
+void Canvas::ScreenSpacePerspectiveProjection(float vertex[3], int screen_space_vertex[][2]){
+  float view_space_vertex[2];
+
+  view_space_vertex[0] = vertex[0] * transform/(aspect_ratio * vertex[2]);
+  view_space_vertex[1] = vertex[1] * transform/vertex[2];
+
+  (*screen_space_vertex)[0] = ((view_space_vertex[0] + 1.0)/2.0) * width;
+  (*screen_space_vertex)[1] = ((-view_space_vertex[1] + 1.0)/2.0) * height;
+}
+
+void Canvas::DrawTriangle(float vertex_1[3], float vertex_2[3], float vertex_3[3]){
   int screen_space_vertex_1[2];
   int screen_space_vertex_2[2];
   int screen_space_vertex_3[2];
 
   int position[2];
 
-  view_space_vertex_1[0] = vertex_1[0] * transform/(aspect_ratio * vertex_1[2]);
-  view_space_vertex_1[1] = vertex_1[1] * transform/vertex_1[2];
-  view_space_vertex_2[0] = vertex_2[0] * transform/(aspect_ratio * vertex_2[2]);
-  view_space_vertex_2[1] = vertex_2[1] * transform/vertex_2[2];
-  view_space_vertex_3[0] = vertex_3[0] * transform/(aspect_ratio * vertex_3[2]);
-  view_space_vertex_3[1] = vertex_3[1] * transform/vertex_3[2];
-
-  screen_space_vertex_1[0] = ((view_space_vertex_1[0] + 1.0)/2.0) * width;
-  screen_space_vertex_1[1] = ((-view_space_vertex_1[1] + 1.0)/2.0) * height;
-  screen_space_vertex_2[0] = ((view_space_vertex_2[0] + 1.0)/2.0) * width;
-  screen_space_vertex_2[1] = ((-view_space_vertex_2[1] + 1.0)/2.0) * height;
-  screen_space_vertex_3[0] = ((view_space_vertex_3[0] + 1.0)/2.0) * width;
-  screen_space_vertex_3[1] = ((-view_space_vertex_3[1] + 1.0)/2.0) * height;
+  ScreenSpacePerspectiveProjection(vertex_1, &screen_space_vertex_1);
+  ScreenSpacePerspectiveProjection(vertex_2, &screen_space_vertex_2);
+  ScreenSpacePerspectiveProjection(vertex_3, &screen_space_vertex_3);
 
   for(int i = 0; i < height; i++){
     position[1] = i;
     for(int j = 0; j < width; j++){
       position[0] = j;
-      if(DotProduct(screen_space_vertex_1, screen_space_vertex_2, position) >= 0 && 
-          DotProduct(screen_space_vertex_2, screen_space_vertex_3, position) >= 0 && 
-          DotProduct(screen_space_vertex_3, screen_space_vertex_1, position) >= 0){
+      if(IsInTriangle(screen_space_vertex_1, screen_space_vertex_2, screen_space_vertex_3, position)){
         matrix[i][j] = '.';
       }
     }
