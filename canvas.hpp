@@ -1,12 +1,13 @@
 #pragma once
 
 #include "vectors.hpp"
+#include <vector>
 
 class Canvas{
 	private:
 		int height;
 		int width;
-		char** matrix;
+		std::vector<std::vector<char>> matrix;
 
 		float fov;
 		float aspect_ratio;

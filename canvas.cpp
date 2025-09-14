@@ -1,5 +1,4 @@
 #include <iostream>
-#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <unistd.h>
@@ -18,14 +17,14 @@ Canvas::Canvas(){
 
 	height = window.ws_row;
 	width = window.ws_col;
-	matrix = (char**)calloc(height, sizeof(char*));
+	matrix.reserve(height);
 
 	fov = 90.0;
 	aspect_ratio = (float)width/(float)height;
 	transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
 
 	for(int i = 0; i < height; i++){
-		matrix[i] = (char*)calloc(width, sizeof(char));
+		matrix[i].reserve(width);
 	}
 
 	for(int i = 0; i < height; i++){
@@ -35,12 +34,8 @@ Canvas::Canvas(){
 	}
 }
 
-Canvas::~Canvas(){
-	for(int i = 0; i < height; i++){
-		free(matrix[i]);
-	}
-	free(matrix);
-}
+Canvas::~Canvas(){}
+
 
 void Canvas::ChangeFOV(float new_fov){
   if(new_fov <= 0.0 || new_fov >= 180.0){
@@ -70,7 +65,7 @@ int Canvas::LeftRightVector(Vec2 A, Vec2 B, Vec2 P){
   vector_AP.x = P.x - A.x;
   vector_AP.y = P.y - A.y;
 
-  return vector_AB.x * vector_AP.x + vector_AB.y * vector_AP.y;
+  return vector_AB.Dot(vector_AP);
 }
 
 bool Canvas::IsInTriangle(Vec2 vertex_1, Vec2 vertex_2, Vec2 vertex_3, Vec2 position){
@@ -115,7 +110,6 @@ void Canvas::DrawTriangle(Vec3 vertex_1, Vec3 vertex_2, Vec3 vertex_3){
       }
     }
   }
-
 }
 
 void Canvas::Print(){
@@ -124,6 +118,6 @@ void Canvas::Print(){
       std::cout << matrix[i][j];
       matrix[i][j] = ' ';
 		}
-    printf("\n");
+		std::cout << std::endl;
 	}
 }
