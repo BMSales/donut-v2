@@ -3,12 +3,13 @@
 #include <unistd.h>
 #include <time.h>
 #include "canvas.hpp"
+#include "vectors.hpp"
 
 int main(){
 	Canvas canvas = Canvas();
-  float vertex_1[3] = {0.0, 50.0, 100.0};
-  float vertex_2[3] = {50.0, -50.0, 100.0};
-  float vertex_3[3] = {-50.0, -50.0, 100.0};
+  Vec3 vertex_1 = {0.0, 50.0, 100.0};
+  Vec3 vertex_2 = {50.0, -50.0, 100.0};
+  Vec3 vertex_3 = {-50.0, -50.0, 100.0};
 
   while(1){
     canvas.DrawTriangle(vertex_1, vertex_2, vertex_3);

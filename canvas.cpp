@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include "canvas.hpp"
+#include "vectors.hpp"
 
 #define M_PI 3.14159265358979323846
 
@@ -51,31 +52,31 @@ void Canvas::ChangeFOV(float new_fov){
 	transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
 }
 
-int DotProduct(int A[2], int B[2], int P[2]){
-  int vector_AB[2];
-  int vector_AP[2];
+int Canvas::LeftRightVector(Vec2 A, Vec2 B, Vec2 P){
+  Vec2 vector_AB;
+  Vec2 vector_AP;
   int swap;
 
-  vector_AB[0] = B[0] - A[0];
-  vector_AB[1] = B[1] - A[1];
+  vector_AB.x = B.x - A.x;
+  vector_AB.y = B.y - A.y;
 
   // rotate AB to determine if P is on the right side 
   // or the left side of AB
   // the rotation is done according to screen space
-  swap = vector_AB[0];
-  vector_AB[0] = -vector_AB[1];
-  vector_AB[1] = swap;
+  swap = vector_AB.x;
+  vector_AB.x = -vector_AB.y;
+  vector_AB.y = swap;
 
-  vector_AP[0] = P[0] - A[0];
-  vector_AP[1] = P[1] - A[1];
+  vector_AP.x = P.x - A.x;
+  vector_AP.y = P.y - A.y;
 
-  return vector_AB[0] * vector_AP[0] + vector_AB[1] * vector_AP[1];
+  return vector_AB.x * vector_AP.x + vector_AB.y * vector_AP.y;
 }
 
-bool IsInTriangle(int vertex_1[2], int vertex_2[2], int vertex_3[2], int position[2]){
-  int AB = DotProduct(vertex_1, vertex_2, position);
-  int BC = DotProduct(vertex_2, vertex_3, position);
-  int CA = DotProduct(vertex_3, vertex_1, position);
+bool Canvas::IsInTriangle(Vec2 vertex_1, Vec2 vertex_2, Vec2 vertex_3, Vec2 position){
+  int AB = LeftRightVector(vertex_1, vertex_2, position);
+  int BC = LeftRightVector(vertex_2, vertex_3, position);
+  int CA = LeftRightVector(vertex_3, vertex_1, position);
 
   if(AB >= 0 && BC >= 0 && CA >= 0){
     return true;
@@ -84,31 +85,31 @@ bool IsInTriangle(int vertex_1[2], int vertex_2[2], int vertex_3[2], int positio
   return false;
 }
 
-void Canvas::ScreenSpacePerspectiveProjection(float vertex[3], int screen_space_vertex[][2]){
-  float view_space_vertex[2];
+void Canvas::ScreenSpacePerspectiveProjection(Vec3 vertex, Vec2* screen_space_vertex){
+  Vec2 view_space_vertex;
 
-  view_space_vertex[0] = vertex[0] * transform/(aspect_ratio * vertex[2]);
-  view_space_vertex[1] = vertex[1] * transform/vertex[2];
+  view_space_vertex.x = vertex.x * transform/(aspect_ratio * vertex.z);
+  view_space_vertex.y = vertex.y * transform/vertex.z;
 
-  (*screen_space_vertex)[0] = ((view_space_vertex[0] + 1.0)/2.0) * width;
-  (*screen_space_vertex)[1] = ((-view_space_vertex[1] + 1.0)/2.0) * height;
+  screen_space_vertex->x = ((view_space_vertex.x + 1.0)/2.0) * width;
+  screen_space_vertex->y = ((-view_space_vertex.y + 1.0)/2.0) * height;
 }
 
-void Canvas::DrawTriangle(float vertex_1[3], float vertex_2[3], float vertex_3[3]){
-  int screen_space_vertex_1[2];
-  int screen_space_vertex_2[2];
-  int screen_space_vertex_3[2];
+void Canvas::DrawTriangle(Vec3 vertex_1, Vec3 vertex_2, Vec3 vertex_3){
+  Vec2 screen_space_vertex_1;
+  Vec2 screen_space_vertex_2;
+  Vec2 screen_space_vertex_3;
 
-  int position[2];
+  Vec2 position;
 
   ScreenSpacePerspectiveProjection(vertex_1, &screen_space_vertex_1);
   ScreenSpacePerspectiveProjection(vertex_2, &screen_space_vertex_2);
   ScreenSpacePerspectiveProjection(vertex_3, &screen_space_vertex_3);
 
   for(int i = 0; i < height; i++){
-    position[1] = i;
+    position.y = i;
     for(int j = 0; j < width; j++){
-      position[0] = j;
+      position.x = j;
       if(IsInTriangle(screen_space_vertex_1, screen_space_vertex_2, screen_space_vertex_3, position)){
         matrix[i][j] = '.';
       }

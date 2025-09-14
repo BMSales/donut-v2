@@ -1,5 +1,7 @@
 #pragma once
 
+#include "vectors.hpp"
+
 class Canvas{
 	private:
 		int height;
@@ -10,13 +12,15 @@ class Canvas{
 		float aspect_ratio;
 		float transform;
 
-    void ScreenSpacePerspectiveProjection(float vertex[3], int screen_space_vertex[][2]);
+		bool IsInTriangle(Vec2 vertex_1, Vec2 vertex_2, Vec2 vertex_3, Vec2 position);
+		int LeftRightVector(Vec2 A, Vec2 B, Vec2 P);
+    void ScreenSpacePerspectiveProjection(Vec3 vertex, Vec2* screen_space_vertex);
 
 	public:
 		Canvas();
 		~Canvas();
 
-		void DrawTriangle(float vertex_1[3], float vertex_2[3], float vertex_3[3]);
+		void DrawTriangle(Vec3 vertex_1, Vec3 vertex_2, Vec3 vertex_3);
     void ChangeFOV(float new_fov);
 		void Print();
-  };
+};
