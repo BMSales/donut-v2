@@ -15,7 +15,7 @@ class Canvas{
 
 		bool IsInTriangle(Vec2 vertex_1, Vec2 vertex_2, Vec2 vertex_3, Vec2 position);
 		int LeftRightVector(Vec2 A, Vec2 B, Vec2 P);
-    void ScreenSpacePerspectiveProjection(Vec3 vertex, Vec2* screen_space_vertex);
+    Vec2 ScreenSpacePerspectiveProjection(Vec3 vertex);
 
 	public:
 		Canvas();

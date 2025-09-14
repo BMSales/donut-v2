@@ -26,7 +26,7 @@ Canvas::Canvas(){
 	for(int i = 0; i < height; i++){
 		matrix[i].reserve(width);
 	}
-
+	
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
 			matrix[i][j] = ' ';
@@ -50,20 +50,18 @@ void Canvas::ChangeFOV(float new_fov){
 int Canvas::LeftRightVector(Vec2 A, Vec2 B, Vec2 P){
   Vec2 vector_AB;
   Vec2 vector_AP;
-  int swap;
+  int rotation_assist;
 
-  vector_AB.x = B.x - A.x;
-  vector_AB.y = B.y - A.y;
+  vector_AB = B - A;
 
   // rotate AB to determine if P is on the right side 
   // or the left side of AB
   // the rotation is done according to screen space
-  swap = vector_AB.x;
+  rotation_assist = vector_AB.x;
   vector_AB.x = -vector_AB.y;
-  vector_AB.y = swap;
+  vector_AB.y = rotation_assist;
 
-  vector_AP.x = P.x - A.x;
-  vector_AP.y = P.y - A.y;
+  vector_AP = P - A;
 
   return vector_AB.Dot(vector_AP);
 }
@@ -80,26 +78,23 @@ bool Canvas::IsInTriangle(Vec2 vertex_1, Vec2 vertex_2, Vec2 vertex_3, Vec2 posi
   return false;
 }
 
-void Canvas::ScreenSpacePerspectiveProjection(Vec3 vertex, Vec2* screen_space_vertex){
-  Vec2 view_space_vertex;
+Vec2 Canvas::ScreenSpacePerspectiveProjection(Vec3 vertex){
+  Vec2 screen_space_vertex;
 
-  view_space_vertex.x = vertex.x * transform/(aspect_ratio * vertex.z);
-  view_space_vertex.y = vertex.y * transform/vertex.z;
+  screen_space_vertex.x = vertex.x * transform/(aspect_ratio * vertex.z);
+  screen_space_vertex.y = vertex.y * transform/vertex.z;
 
-  screen_space_vertex->x = ((view_space_vertex.x + 1.0)/2.0) * width;
-  screen_space_vertex->y = ((-view_space_vertex.y + 1.0)/2.0) * height;
+  screen_space_vertex.x = ((screen_space_vertex.x + 1.0)/2.0) * width;
+  screen_space_vertex.y = ((-screen_space_vertex.y + 1.0)/2.0) * height;
+
+	return screen_space_vertex;
 }
 
 void Canvas::DrawTriangle(Vec3 vertex_1, Vec3 vertex_2, Vec3 vertex_3){
-  Vec2 screen_space_vertex_1;
-  Vec2 screen_space_vertex_2;
-  Vec2 screen_space_vertex_3;
-
+  Vec2 screen_space_vertex_1 = ScreenSpacePerspectiveProjection(vertex_1);
+  Vec2 screen_space_vertex_2 = ScreenSpacePerspectiveProjection(vertex_2);
+  Vec2 screen_space_vertex_3 = ScreenSpacePerspectiveProjection(vertex_3);
   Vec2 position;
-
-  ScreenSpacePerspectiveProjection(vertex_1, &screen_space_vertex_1);
-  ScreenSpacePerspectiveProjection(vertex_2, &screen_space_vertex_2);
-  ScreenSpacePerspectiveProjection(vertex_3, &screen_space_vertex_3);
 
   for(int i = 0; i < height; i++){
     position.y = i;
