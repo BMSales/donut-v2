@@ -19,7 +19,6 @@ class Canvas{
 
 	public:
 		Canvas();
-		~Canvas();
 
 		void DrawTriangle(Vec3 vertex_1, Vec3 vertex_2, Vec3 vertex_3);
     void ChangeFOV(float new_fov);
