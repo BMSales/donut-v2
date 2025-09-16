@@ -95,7 +95,6 @@ void Canvas::DrawTriangle(Vec3 vertex_1, Vec3 vertex_2, Vec3 vertex_3){
 
 	int left = std::min(std::min(screen_space_vertex_1.x, screen_space_vertex_2.x), screen_space_vertex_3.x);
 	int right = std::max(std::max(screen_space_vertex_1.x, screen_space_vertex_2.x), screen_space_vertex_3.x);
-	right = std::min(right, width);
 	int up = std::min(std::min(screen_space_vertex_1.y, screen_space_vertex_2.y), screen_space_vertex_3.y);
 	int down = std::max(std::max(screen_space_vertex_1.y, screen_space_vertex_2.y), screen_space_vertex_3.y);
 
