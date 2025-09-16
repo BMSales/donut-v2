@@ -21,7 +21,7 @@ int main(){
     canvas.Print();
     usleep(16*1000);
     system("clear");
-		// shape.RotateY(angle);
+		shape.RotateY(angle);
   }
 }
 

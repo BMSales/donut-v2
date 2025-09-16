@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cstdlib>
 #include <cmath>
 #include <ctime>
@@ -15,35 +16,51 @@ int NegPos(){
 
 Shape::Shape(unsigned int tri_count){
 	// std::srand(clock());
-	tri.reserve(tri_count);
 
-	for(auto &triangle : tri){
-			triangle.A.x = 0.0;
-			triangle.B.x = 50.0;
-			triangle.C.x = -50.0;
+  Triangle triangle;
+ 
+  triangle.A.x = 0.0;
+  triangle.B.x = 50.0;
+  triangle.C.x = -50.0;
 
-			triangle.A.y = 50.0;
-			triangle.B.y = -50.0;
-			triangle.C.y = -50.0;
+  triangle.A.y = 50.0;
+  triangle.B.y = -50.0;
+  triangle.C.y = -50.0;
 
-			triangle.A.z = 100.0;
-			triangle.B.z = 100.0;
-			triangle.C.z = 100.0;
+  triangle.A.z = 100.0;
+  triangle.B.z = 100.0;
+  triangle.C.z = 100.0;
 
-			// triangle.A.x = 1 + NegPos() * (std::rand() % 101);
-			// triangle.B.x = 1 + NegPos() * (std::rand() % 101);
-			// triangle.C.x = 1 + NegPos() * (std::rand() % 101);
-			//
-			// triangle.A.y = 1 + NegPos() * (std::rand() % 101);
-			// triangle.B.y = 1 + NegPos() * (std::rand() % 101);
-			// triangle.C.y = 1 + NegPos() * (std::rand() % 101);
-			//
-			// triangle.A.z = 10 + (std::rand() % 101);
-			// triangle.B.z = 10 + (std::rand() % 101);
-			// triangle.C.z = 10 + (std::rand() % 101);
+	for(int i = 0; i < tri_count; i++){
+    
+    tri.push_back(triangle);
+    // triangle.A.x = 0.0;
+    // triangle.B.x = 50.0;
+    // triangle.C.x = -50.0;
+    //
+    // triangle.A.y = 50.0;
+    // triangle.B.y = -50.0;
+    // triangle.C.y = -50.0;
+    //
+    // triangle.A.z = 100.0;
+    // triangle.B.z = 100.0;
+    // triangle.C.z = 100.0;
+
+    // triangle.A.x = 1 + NegPos() * (std::rand() % 101);
+    // triangle.B.x = 1 + NegPos() * (std::rand() % 101);
+    // triangle.C.x = 1 + NegPos() * (std::rand() % 101);
+    //
+    // triangle.A.y = 1 + NegPos() * (std::rand() % 101);
+    // triangle.B.y = 1 + NegPos() * (std::rand() % 101);
+    // triangle.C.y = 1 + NegPos() * (std::rand() % 101);
+    //
+    // triangle.A.z = 10 + (std::rand() % 101);
+    // triangle.B.z = 10 + (std::rand() % 101);
+    // triangle.C.z = 10 + (std::rand() % 101);
+    
 	}
 
-	for(auto & triangle : tri){
+	for(auto &triangle : tri){
 		center.x += (triangle.A.x + triangle.B.x + triangle.C.x);
 		center.y += (triangle.A.y + triangle.B.y + triangle.C.y);
 		center.z += (triangle.A.z + triangle.B.z + triangle.C.z);
@@ -52,10 +69,15 @@ Shape::Shape(unsigned int tri_count){
 	center.x /= tri_count * 3;
 	center.y /= tri_count * 3;
 	center.z /= tri_count * 3;
+
 }
 
-std::vector<Triangle> Shape::GetTriangles(){
-	return tri;
+Triangle Shape::GetTriangle(unsigned int index){
+  if(index > tri.size() - 1){
+    std::cout << "invalid index" << std::endl;
+    exit(-1);
+  }
+	return tri[index];
 }
 
 void Shape::RotateX(float angle){

@@ -3,6 +3,8 @@
 #include <math.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+
+#include "shape.hpp"
 #include "canvas.hpp"
 #include "vectors.hpp"
 
@@ -97,9 +99,6 @@ bool Canvas::AABB_Collision(int min_x, int max_x, int min_y, int max_y){
 }
 
 void Canvas::DrawTriangle(Triangle triangle){
-	while(1){
-		std::cout << triangle.A.y << std::endl;
-	}
 	Vec2 screen_space_vertex_1 = ScreenSpacePerspectiveProjection(triangle.A);
 	Vec2 screen_space_vertex_2 = ScreenSpacePerspectiveProjection(triangle.B);
 	Vec2 screen_space_vertex_3 = ScreenSpacePerspectiveProjection(triangle.C);
@@ -140,14 +139,8 @@ void Canvas::DrawTriangle(Triangle triangle){
 }
 
 void Canvas::DrawShape(Shape shape){
-	std::vector<int> test;
-	test.push_back(1);
-	test.push_back(1);
-	test.push_back(1);
-	for(auto &triangle : test){
-		std::cout << triangle;
-		exit(1);
-		// DrawTriangle(triangle);
+	for(auto &triangle : shape.tri){
+		DrawTriangle(triangle);
 	}
 }
 

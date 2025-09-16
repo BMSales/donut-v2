@@ -12,15 +12,16 @@ struct Triangle {
 };
 
 class Shape {
-	private:
-		std::vector<Triangle> tri;
-		Vec3 center;
 	public:
 		Shape(unsigned int tri_count);
 
-		std::vector<Triangle> GetTriangles();
+		std::vector<Triangle> tri;
+		Triangle GetTriangle(unsigned int index);
 
 		void RotateX(float angle);
 		void RotateY(float angle);
 		void RotateZ(float angle);
+
+  private:
+		Vec3 center;
 };
