@@ -1,0 +1,143 @@
+#include <cstdlib>
+#include <cmath>
+#include <ctime>
+#include "shape.hpp"
+
+#define M_PI 3.14159265358979323846
+
+int NegPos(){
+	int value = std::rand() % 1;
+	if(value == 0){
+		return 1;
+	}
+	return -1;
+}
+
+Shape::Shape(unsigned int tri_count){
+	// std::srand(clock());
+	tri.reserve(tri_count);
+
+	for(auto &triangle : tri){
+			triangle.A.x = 0.0;
+			triangle.B.x = 50.0;
+			triangle.C.x = -50.0;
+
+			triangle.A.y = 50.0;
+			triangle.B.y = -50.0;
+			triangle.C.y = -50.0;
+
+			triangle.A.z = 100.0;
+			triangle.B.z = 100.0;
+			triangle.C.z = 100.0;
+
+			// triangle.A.x = 1 + NegPos() * (std::rand() % 101);
+			// triangle.B.x = 1 + NegPos() * (std::rand() % 101);
+			// triangle.C.x = 1 + NegPos() * (std::rand() % 101);
+			//
+			// triangle.A.y = 1 + NegPos() * (std::rand() % 101);
+			// triangle.B.y = 1 + NegPos() * (std::rand() % 101);
+			// triangle.C.y = 1 + NegPos() * (std::rand() % 101);
+			//
+			// triangle.A.z = 10 + (std::rand() % 101);
+			// triangle.B.z = 10 + (std::rand() % 101);
+			// triangle.C.z = 10 + (std::rand() % 101);
+	}
+
+	for(auto & triangle : tri){
+		center.x += (triangle.A.x + triangle.B.x + triangle.C.x);
+		center.y += (triangle.A.y + triangle.B.y + triangle.C.y);
+		center.z += (triangle.A.z + triangle.B.z + triangle.C.z);
+	}
+
+	center.x /= tri_count * 3;
+	center.y /= tri_count * 3;
+	center.z /= tri_count * 3;
+}
+
+std::vector<Triangle> Shape::GetTriangles(){
+	return tri;
+}
+
+void Shape::RotateX(float angle){
+	float rad = angle * M_PI/180.0;
+	float cos_rad = cos(rad);
+	float sin_rad = sin(rad);
+
+	for(auto &triangle : tri){
+		triangle.A = triangle.A - center;
+		triangle.B = triangle.B - center;
+		triangle.C = triangle.C - center;
+	}
+
+	for(auto &triangle : tri){
+		triangle.A.y = triangle.A.y * cos_rad + triangle.A.z * -sin_rad;
+		triangle.B.y = triangle.B.y * cos_rad + triangle.B.z * -sin_rad;
+		triangle.C.y = triangle.C.y * cos_rad + triangle.C.z * -sin_rad;
+
+		triangle.A.z = triangle.A.y * sin_rad + triangle.A.z * cos_rad;
+		triangle.B.z = triangle.B.y * sin_rad + triangle.B.z * cos_rad;
+		triangle.C.z = triangle.C.y * sin_rad + triangle.C.z * cos_rad;
+	}
+
+	for(auto& triangle : tri){
+		triangle.A = triangle.A + center;
+		triangle.B = triangle.B + center;
+		triangle.C = triangle.C + center;
+	}
+}
+
+void Shape::RotateY(float angle){
+	float rad = angle * M_PI/180.0;
+	float cos_rad = cos(rad);
+	float sin_rad = sin(rad);
+
+	for(auto &triangle : tri){
+		triangle.A = triangle.A - center;
+		triangle.B = triangle.B - center;
+		triangle.C = triangle.C - center;
+	}
+
+	for(auto &triangle : tri){
+		triangle.A.x = triangle.A.x * cos_rad + triangle.A.z * -sin_rad;
+		triangle.B.x = triangle.B.x * cos_rad + triangle.B.z * -sin_rad;
+		triangle.C.x = triangle.C.x * cos_rad + triangle.C.z * -sin_rad;
+
+		triangle.A.z = triangle.A.x * sin_rad + triangle.A.z * cos_rad;
+		triangle.B.z = triangle.B.x * sin_rad + triangle.B.z * cos_rad;
+		triangle.C.z = triangle.C.x * sin_rad + triangle.C.z * cos_rad;
+	}
+
+	for(auto& triangle : tri){
+		triangle.A = triangle.A + center;
+		triangle.B = triangle.B + center;
+		triangle.C = triangle.C + center;
+	}
+}
+
+void Shape::RotateZ(float angle){
+	float rad = angle * M_PI/180.0;
+	float cos_rad = cos(rad);
+	float sin_rad = sin(rad);
+
+	for(auto &triangle : tri){
+		triangle.A = triangle.A - center;
+		triangle.B = triangle.B - center;
+		triangle.C = triangle.C - center;
+	}
+
+	for(auto &triangle : tri){
+		triangle.A.x = triangle.A.x * cos_rad + triangle.A.y * -sin_rad;
+		triangle.B.x = triangle.B.x * cos_rad + triangle.B.y * -sin_rad;
+		triangle.C.x = triangle.C.x * cos_rad + triangle.C.y * -sin_rad;
+
+		triangle.A.y = triangle.A.x * sin_rad + triangle.A.y * cos_rad;
+		triangle.B.y = triangle.B.x * sin_rad + triangle.B.y * cos_rad;
+		triangle.C.y = triangle.C.x * sin_rad + triangle.C.y * cos_rad;
+	}
+
+	for(auto& triangle : tri){
+		triangle.A = triangle.A + center;
+		triangle.B = triangle.B + center;
+		triangle.C = triangle.C + center;
+	}
+}

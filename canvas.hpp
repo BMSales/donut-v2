@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vectors.hpp"
+#include "shape.hpp"
 #include <vector>
 
 class Canvas{
@@ -14,13 +15,15 @@ class Canvas{
 		float transform;
 
 		bool IsInTriangle(Vec2 vertex_1, Vec2 vertex_2, Vec2 vertex_3, Vec2 position);
+		bool AABB_Collision(int min_x, int max_x, int min_y, int max_y);
 		int LeftRightVector(Vec2 A, Vec2 B, Vec2 P);
     Vec2 ScreenSpacePerspectiveProjection(Vec3 vertex);
 
 	public:
 		Canvas();
 
-		void DrawTriangle(Vec3 vertex_1, Vec3 vertex_2, Vec3 vertex_3);
+		void DrawTriangle(Triangle triangle);
+		void DrawShape(Shape shape);
     void ChangeFOV(float new_fov);
 		void Print();
 };
