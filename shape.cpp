@@ -7,7 +7,7 @@
 #define M_PI 3.14159265358979323846
 
 int NegPos(){
-	int value = std::rand() % 1;
+	int value = std::rand() % 2;
 	if(value == 0){
 		return 1;
 	}
@@ -15,48 +15,35 @@ int NegPos(){
 }
 
 Shape::Shape(unsigned int tri_count){
-	// std::srand(clock());
-
+  std::srand(std::time(0));
   Triangle triangle;
  
   triangle.A.x = 0.0;
-  triangle.B.x = 50.0;
-  triangle.C.x = -50.0;
+  triangle.B.x = 20.0;
+  triangle.C.x = -20.0;
 
-  triangle.A.y = 50.0;
-  triangle.B.y = -50.0;
-  triangle.C.y = -50.0;
+  triangle.A.y = 20.0;
+  triangle.B.y = -20.0;
+  triangle.C.y = -20.0;
 
-  triangle.A.z = 100.0;
-  triangle.B.z = 100.0;
-  triangle.C.z = 100.0;
+  triangle.A.z = 50.0;
+  triangle.B.z = 50.0;
+  triangle.C.z = 50.0;
 
 	for(int i = 0; i < tri_count; i++){
-    
     tri.push_back(triangle);
-    // triangle.A.x = 0.0;
-    // triangle.B.x = 50.0;
-    // triangle.C.x = -50.0;
-    //
-    // triangle.A.y = 50.0;
-    // triangle.B.y = -50.0;
-    // triangle.C.y = -50.0;
-    //
-    // triangle.A.z = 100.0;
-    // triangle.B.z = 100.0;
-    // triangle.C.z = 100.0;
 
-    // triangle.A.x = 1 + NegPos() * (std::rand() % 101);
-    // triangle.B.x = 1 + NegPos() * (std::rand() % 101);
-    // triangle.C.x = 1 + NegPos() * (std::rand() % 101);
-    //
-    // triangle.A.y = 1 + NegPos() * (std::rand() % 101);
-    // triangle.B.y = 1 + NegPos() * (std::rand() % 101);
-    // triangle.C.y = 1 + NegPos() * (std::rand() % 101);
-    //
-    // triangle.A.z = 10 + (std::rand() % 101);
-    // triangle.B.z = 10 + (std::rand() % 101);
-    // triangle.C.z = 10 + (std::rand() % 101);
+    triangle.A.x = 1 + NegPos() * (std::rand() % 31);
+    triangle.B.x = 1 + NegPos() * (std::rand() % 31);
+    triangle.C.x = 1 + NegPos() * (std::rand() % 31);
+
+    triangle.A.y = 1 + NegPos() * (std::rand() % 31);
+    triangle.B.y = 1 + NegPos() * (std::rand() % 31);
+    triangle.C.y = 1 + NegPos() * (std::rand() % 31);
+
+    triangle.A.z = 40 + (std::rand() % 31);
+    triangle.B.z = 40 + (std::rand() % 31);
+    triangle.C.z = 40 + (std::rand() % 31);
     
 	}
 
