@@ -1,6 +1,8 @@
 #pragma once
 
+#include <fstream>
 #include <vector>
+
 #include "vectors.hpp"
 
 typedef struct Triangle Triangle;
@@ -11,9 +13,9 @@ struct Triangle {
 	Vec3 C;
 };
 
-class Shape {
+class Object {
 	public:
-		Shape(unsigned int tri_count);
+		Object(std::stream pathToFile);
 
 		std::vector<Triangle> tri;
 		Triangle GetTriangle(unsigned int index);
@@ -23,5 +25,5 @@ class Shape {
 		void RotateZ(float angle);
 
   private:
-		Vec3 center;
+		Vec3 offset;
 };

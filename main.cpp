@@ -3,21 +3,25 @@
 #include <ctime>
 
 #include "canvas.hpp"
-#include "shape.hpp"
+#include "object.hpp"
 #include "vectors.hpp"
 
 int main(){
 	Canvas canvas = Canvas();
-	Shape shape = Shape(1000);
-	float angle = 1;
+	Object shape = Object(30);
+	float angle_1 = 1;
+	float angle_2 = -1;
+	float angle_3 = 0.5;
 
   while(1){
-    canvas.DrawShape(&shape);
+    canvas.DrawObject(&shape);
     canvas.Print();
     usleep(16*1000);
     canvas.ClearScreen();
     // system("clear");
-		shape.RotateY(angle);
+		shape.RotateX(angle_1);
+		shape.RotateY(angle_2);
+		shape.RotateZ(angle_3);
   }
 }
 

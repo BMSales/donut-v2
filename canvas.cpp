@@ -19,19 +19,19 @@ Canvas::Canvas(){
 
 	height = window.ws_row;
 	width = window.ws_col;
-	matrix.reserve(height);
 
 	fov = 90.0;
 	aspect_ratio = (float)width/(float)height;
 	transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
 
+	screen.reserve(height);
 	for(int i = 0; i < height; i++){
-		matrix[i].reserve(width);
+		screen[i].reserve(width);
 	}
 	
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
-			matrix[i][j] = ' ';
+			screen[i][j] = ' ';
 		}
 	}
 }
@@ -132,13 +132,13 @@ void Canvas::DrawTriangle(Triangle* triangle){
 		for(int j = min_x; j <= max_x; j++){
 			position.x = j;
 			if(IsInTriangle(screen_space_vertex_1, screen_space_vertex_2, screen_space_vertex_3, position)){
-				matrix[i][j] = '.';
+				screen[i][j] = '.';
 			}
 		}
 	}
 }
 
-void Canvas::DrawShape(Shape* shape){
+void Canvas::DrawObject(Object* shape){
 	for(auto &triangle : (*shape).tri){
 		DrawTriangle(&triangle);
 	}
@@ -147,8 +147,8 @@ void Canvas::DrawShape(Shape* shape){
 void Canvas::Print(){
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
-			std::cout << matrix[i][j];
-			matrix[i][j] = ' ';
+			std::cout << screen[i][j];
+			screen[i][j] = ' ';
 		}
 		std::cout << std::endl;
 	}

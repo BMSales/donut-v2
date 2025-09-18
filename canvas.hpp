@@ -1,14 +1,16 @@
 #pragma once
 
-#include "vectors.hpp"
-#include "shape.hpp"
+#include <string>
 #include <vector>
+
+#include "vectors.hpp"
+#include "object.hpp"
 
 class Canvas{
   public:
 		Canvas();
 
-		void DrawShape(Shape* shape);
+		void DrawObject(Object* shape);
     void ChangeFOV(float new_fov);
 		void Print();
     void ClearScreen();
@@ -16,7 +18,7 @@ class Canvas{
 	private:
 		int height;
 		int width;
-		std::vector<std::vector<char>> matrix;
+		std::vector<std::vector<char>> screen;
 
 		float fov;
 		float aspect_ratio;
