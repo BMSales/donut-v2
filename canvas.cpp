@@ -98,10 +98,10 @@ bool Canvas::AABB_Collision(int min_x, int max_x, int min_y, int max_y){
 	return false;
 }
 
-void Canvas::DrawTriangle(Triangle triangle){
-	Vec2 screen_space_vertex_1 = ScreenSpacePerspectiveProjection(triangle.A);
-	Vec2 screen_space_vertex_2 = ScreenSpacePerspectiveProjection(triangle.B);
-	Vec2 screen_space_vertex_3 = ScreenSpacePerspectiveProjection(triangle.C);
+void Canvas::DrawTriangle(Triangle* triangle){
+	Vec2 screen_space_vertex_1 = ScreenSpacePerspectiveProjection(triangle->A);
+	Vec2 screen_space_vertex_2 = ScreenSpacePerspectiveProjection(triangle->B);
+	Vec2 screen_space_vertex_3 = ScreenSpacePerspectiveProjection(triangle->C);
 	Vec2 position;
 
 	int min_x = std::min(std::min(screen_space_vertex_1.x, screen_space_vertex_2.x), screen_space_vertex_3.x);
@@ -138,9 +138,9 @@ void Canvas::DrawTriangle(Triangle triangle){
 	}
 }
 
-void Canvas::DrawShape(Shape shape){
-	for(auto &triangle : shape.tri){
-		DrawTriangle(triangle);
+void Canvas::DrawShape(Shape* shape){
+	for(auto &triangle : (*shape).tri){
+		DrawTriangle(&triangle);
 	}
 }
 
@@ -152,4 +152,8 @@ void Canvas::Print(){
 		}
 		std::cout << std::endl;
 	}
+}
+
+void Canvas::ClearScreen(){
+  std::cout << "\033[2J\033[H";
 }

@@ -8,14 +8,15 @@
 
 int main(){
 	Canvas canvas = Canvas();
-	Shape shape = Shape(22);
+	Shape shape = Shape(1000);
 	float angle = 1;
 
   while(1){
-    canvas.DrawShape(shape);
+    canvas.DrawShape(&shape);
     canvas.Print();
     usleep(16*1000);
-    system("clear");
+    canvas.ClearScreen();
+    // system("clear");
 		shape.RotateY(angle);
   }
 }

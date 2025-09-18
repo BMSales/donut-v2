@@ -8,9 +8,10 @@ class Canvas{
   public:
 		Canvas();
 
-		void DrawShape(Shape shape);
+		void DrawShape(Shape* shape);
     void ChangeFOV(float new_fov);
 		void Print();
+    void ClearScreen();
 
 	private:
 		int height;
@@ -26,6 +27,5 @@ class Canvas{
 
 		int LeftRightVector(Vec2 A, Vec2 B, Vec2 P);
     Vec2 ScreenSpacePerspectiveProjection(Vec3 vertex);
-		void DrawTriangle(Triangle triangle);
-
+		void DrawTriangle(Triangle* triangle);
 };
