@@ -8,13 +8,11 @@
 #define M_PI 3.14159265358979323846
 
 Object::Object(std::string pathToFile){
-  Triangle triangle;
-
   std::ifstream object_file(pathToFile);
   std::string line;
 	std::string objVertex;
 	std::string objFace;
-	std::vector<std::vector<int>> vertexIndices;
+
 	int k = 0;
 
   if(!object_file){
@@ -35,13 +33,13 @@ Object::Object(std::string pathToFile){
     }
 
 		if(line.substr(0, 2) == "f "){
-			vertexIndices.push_back(std::vector<int>());
+			vertIndex.push_back(std::vector<int>());
 			for(int i = 2; line[i] != '\0'; i++){
 				if(objFace == "" || objFace == "-"){
 					objFace += line[i];
 				}
 				else if(line[i] == ' ' || line[i + 1] == '\0'){
-					vertexIndices[k].push_back(stoi(objFace));
+					vertIndex[k].push_back(stoi(objFace));
 					objFace = "";
 				}
 			}
@@ -49,24 +47,12 @@ Object::Object(std::string pathToFile){
 		}
 	}
 
-	for(auto &indexes : vertexIndices){
-		for(auto &index : indexes){
-			std::cout << index << std::endl;
-		}
-		std::cout << std::endl;
-	}
+	// for(auto &indexes : vertIndex){
+	// }
 
 	for(auto &vertex : vert){
 		std::cout << vertex << std::endl;
 	}
-}
-
-Triangle Object::GetTriangle(unsigned int index){
-  if(index > tri.size() - 1){
-    std::cout << "invalid index" << std::endl;
-    exit(-1);
-  }
-	return tri[index];
 }
 
 void Object::RotateX(float angle){

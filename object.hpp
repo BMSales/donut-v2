@@ -19,7 +19,7 @@ class Object {
 
 		std::vector<Triangle> tri;
 		std::vector<float> vert;
-		Triangle GetTriangle(unsigned int index);
+		std::vector<std::vector<int>> vertIndex;
 
 		void RotateX(float angle);
 		void RotateY(float angle);
