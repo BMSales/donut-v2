@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-#include "shape.hpp"
+#include "object.hpp"
 #include "canvas.hpp"
 #include "vectors.hpp"
 

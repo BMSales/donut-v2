@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <vector>
 
 #include "object.hpp"
 
@@ -11,6 +12,10 @@ Object::Object(std::string pathToFile){
 
   std::ifstream object_file(pathToFile);
   std::string line;
+	std::string objVertex;
+	std::string objFace;
+	std::vector<std::vector<int>> vertexIndices;
+	int k = 0;
 
   if(!object_file){
     std::cout << "ERROR: could not open file" << std::endl;
@@ -18,9 +23,46 @@ Object::Object(std::string pathToFile){
   }
 
   while(getline(object_file, line)){
+
     if(line.substr(0, 2) == "v "){
+			for(int i = 2; line[i] != '\0'; i++){
+				objVertex += line[i];
+				if(line[i] == ' ' && objVertex != " "){
+					vert.push_back(stof(objVertex));
+					objVertex = "";
+				}
+			}
     }
-  }
+
+		if(line.substr(0, 2) == "f "){
+			vertexIndices.push_back(std::vector<int>());
+			for(int i = 2; line[i] != '\0'; i++){
+				if(line[i] == '/'){
+					vertexIndices[k].push_back(stoi(objFace));
+					objFace = "";
+					while(line[i] != ' '){
+						i++;
+					}
+					std::cout << line[i] << std::endl;
+					exit(-1);
+				}
+				else {
+					objFace += line[i];
+				}
+			}
+			k++;
+		}
+	}
+
+	for(auto &indexes : vertexIndices){
+		for(auto &index : indexes){
+			std::cout << index << std::endl;
+		}
+	}
+
+	for(auto &vertex : vert){
+		std::cout << vertex << std::endl;
+	}
 }
 
 Triangle Object::GetTriangle(unsigned int index){

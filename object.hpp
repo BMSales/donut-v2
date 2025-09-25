@@ -15,9 +15,10 @@ struct Triangle {
 
 class Object {
 	public:
-		Object(std::stream pathToFile);
+		Object(std::string pathToFile);
 
 		std::vector<Triangle> tri;
+		std::vector<float> vert;
 		Triangle GetTriangle(unsigned int index);
 
 		void RotateX(float angle);
