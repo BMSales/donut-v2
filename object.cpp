@@ -37,17 +37,12 @@ Object::Object(std::string pathToFile){
 		if(line.substr(0, 2) == "f "){
 			vertexIndices.push_back(std::vector<int>());
 			for(int i = 2; line[i] != '\0'; i++){
-				if(line[i] == '/'){
+				if(objFace == "" || objFace == "-"){
+					objFace += line[i];
+				}
+				else if(line[i] == ' ' || line[i + 1] == '\0'){
 					vertexIndices[k].push_back(stoi(objFace));
 					objFace = "";
-					while(line[i] != ' '){
-						i++;
-					}
-					std::cout << line[i] << std::endl;
-					exit(-1);
-				}
-				else {
-					objFace += line[i];
 				}
 			}
 			k++;
@@ -58,6 +53,7 @@ Object::Object(std::string pathToFile){
 		for(auto &index : indexes){
 			std::cout << index << std::endl;
 		}
+		std::cout << std::endl;
 	}
 
 	for(auto &vertex : vert){
