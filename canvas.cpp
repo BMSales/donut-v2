@@ -20,7 +20,7 @@ Canvas::Canvas(){
 	height = window.ws_row;
 	width = window.ws_col;
 
-	fov = 90.0;
+	fov = 60.0;
 	aspect_ratio = (float)width/(float)height;
 	transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
 
@@ -138,8 +138,8 @@ void Canvas::DrawTriangle(Triangle* triangle){
 	}
 }
 
-void Canvas::DrawObject(Object* shape){
-	for(auto &triangle : (*shape).tri){
+void Canvas::DrawObject(Object* object){
+	for(auto &triangle : (*object).tri){
 		DrawTriangle(&triangle);
 	}
 }

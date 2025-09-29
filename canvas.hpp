@@ -10,7 +10,7 @@ class Canvas{
   public:
 		Canvas();
 
-		void DrawObject(Object* shape);
+		void DrawObject(Object* object);
     void ChangeFOV(float new_fov);
 		void Print();
     void ClearScreen();

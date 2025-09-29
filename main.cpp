@@ -7,20 +7,24 @@
 #include "vectors.hpp"
 
 int main(){
-	// Canvas canvas = Canvas();
-	Object shape = Object("./cube/cube.obj");
-	// float angle_1 = 1;
-	// float angle_2 = -1;
-	// float angle_3 = 0.5;
+	Canvas canvas = Canvas();
+	Object object = Object("./monkey/Suzanne.obj");
+	float z = 0.0;
+	object.setOffset({0.0, 0.0, z});
+	float angle_1 = 1;
+	float angle_2 = -0.5;
+	float angle_3 = 0.5;
 
-  // while(1){
-  //   canvas.DrawObject(&shape);
-  //   canvas.Print();
-  //   usleep(16*1000);
-  //   canvas.ClearScreen();
-  // shape.RotateX(angle_1);
-  // shape.RotateY(angle_2);
-  // shape.RotateZ(angle_3);
-  // }
+  while(1){
+    canvas.DrawObject(&object);
+    canvas.Print();
+    usleep(16*1000);
+    canvas.ClearScreen();
+		object.RotateX(angle_1);
+		object.RotateY(angle_2);
+		z += 0.01;
+		object.setOffset({0.0, 0.0, z});
+		// object.RotateZ(angle_3);
+  }
 }
 

@@ -13,6 +13,8 @@ Object::Object(std::string pathToFile){
 	std::string objVertex;
 	std::string objFace;
 
+	Triangle objTriangle;
+
 	int k = 0;
 
   if(!object_file){
@@ -21,11 +23,10 @@ Object::Object(std::string pathToFile){
   }
 
   while(getline(object_file, line)){
-
     if(line.substr(0, 2) == "v "){
 			for(int i = 2; line[i] != '\0'; i++){
 				objVertex += line[i];
-				if(line[i] == ' ' && objVertex != " "){
+				if(line[i] == ' ' || line[i + 1] == '\0'){
 					vert.push_back(stof(objVertex));
 					objVertex = "";
 				}
@@ -47,11 +48,57 @@ Object::Object(std::string pathToFile){
 		}
 	}
 
-	// for(auto &indexes : vertIndex){
-	// }
+	int firstVertex;
+	if(vertIndex[0][0] < 0){
+		firstVertex = - vert.size() / 3;
+	}
+	else {
+		firstVertex = 1;
+	}
 
 	for(auto &vertex : vert){
 		std::cout << vertex << std::endl;
+	}
+	std::cout << std::endl;
+
+	for(auto &index : vertIndex){
+		objTriangle.A.x = vert[(index[0] - firstVertex) * 3];
+		objTriangle.A.y = vert[(index[0] - firstVertex) * 3 + 1];
+		objTriangle.A.z = vert[(index[0] - firstVertex) * 3 + 2];
+
+		objTriangle.B.x = vert[(index[1] - firstVertex) * 3];
+		objTriangle.B.y = vert[(index[1] - firstVertex) * 3 + 1];
+		objTriangle.B.z = vert[(index[1] - firstVertex) * 3 + 2];
+
+		objTriangle.C.x = vert[(index[2] - firstVertex) * 3];
+		objTriangle.C.y = vert[(index[2] - firstVertex) * 3 + 1];
+		objTriangle.C.z = vert[(index[2] - firstVertex) * 3 + 2];
+
+		tri.push_back(objTriangle);
+	}
+
+	offset = {0.0, 0.0, 3.0};
+
+	for(auto &triangle : tri){
+			triangle.A = triangle.A + offset;
+			triangle.B = triangle.B + offset;
+			triangle.C = triangle.C + offset;
+	}
+}
+
+void Object::setOffset(Vec3 offset){
+	for(auto &triangle : tri){
+			triangle.A = triangle.A - this->offset;
+			triangle.B = triangle.B - this->offset;
+			triangle.C = triangle.C - this->offset;
+	}
+
+	this->offset = offset;
+
+	for(auto &triangle : tri){
+			triangle.A = triangle.A + offset;
+			triangle.B = triangle.B + offset;
+			triangle.C = triangle.C + offset;
 	}
 }
 
