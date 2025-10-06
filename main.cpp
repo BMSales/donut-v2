@@ -8,12 +8,12 @@
 
 int main(){
 	Canvas canvas = Canvas();
-	Object object = Object("./monkey/Suzanne.obj");
-	float z = 0.0;
-	object.setOffset({0.0, 0.0, z});
-	float angle_1 = 1;
-	float angle_2 = -0.5;
-	float angle_3 = 0.5;
+	Object object = Object("./cube/cube.obj");
+	float z = 4.0;
+	object.SetOffset({0.0, 0.0, z});
+	float angle_1 = 0.5;
+	float angle_2 = -0.3;
+	float angle_3 = 1;
 
   while(1){
     canvas.DrawObject(&object);
@@ -22,9 +22,7 @@ int main(){
     canvas.ClearScreen();
 		object.RotateX(angle_1);
 		object.RotateY(angle_2);
-		z += 0.01;
-		object.setOffset({0.0, 0.0, z});
-		// object.RotateZ(angle_3);
+		object.RotateZ(angle_3);
   }
 }
 

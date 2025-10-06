@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
+#include <ctime>
+
 #include "object.hpp"
 #include "canvas.hpp"
 #include "vectors.hpp"
@@ -20,7 +22,7 @@ Canvas::Canvas(){
 	height = window.ws_row;
 	width = window.ws_col;
 
-	fov = 60.0;
+	fov = 45.0;
 	aspect_ratio = (float)width/(float)height;
 	transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
 
@@ -139,8 +141,12 @@ void Canvas::DrawTriangle(Triangle* triangle){
 }
 
 void Canvas::DrawObject(Object* object){
+	Triangle render_triangle;
 	for(auto &triangle : (*object).tri){
-		DrawTriangle(&triangle);
+		render_triangle.A = triangle.A + object->GetOffset();
+		render_triangle.B = triangle.B + object->GetOffset();
+		render_triangle.C = triangle.C + object->GetOffset();
+		DrawTriangle(&render_triangle);
 	}
 }
 

@@ -25,7 +25,8 @@ class Object {
 		void RotateY(float angle);
 		void RotateZ(float angle);
 
-		void setOffset(Vec3 offset);
+		void SetOffset(Vec3 offset);
+		Vec3 GetOffset();
 
   private:
 		Vec3 offset;

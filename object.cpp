@@ -56,11 +56,6 @@ Object::Object(std::string pathToFile){
 		firstVertex = 1;
 	}
 
-	for(auto &vertex : vert){
-		std::cout << vertex << std::endl;
-	}
-	std::cout << std::endl;
-
 	for(auto &index : vertIndex){
 		objTriangle.A.x = vert[(index[0] - firstVertex) * 3];
 		objTriangle.A.y = vert[(index[0] - firstVertex) * 3 + 1];
@@ -75,58 +70,44 @@ Object::Object(std::string pathToFile){
 		objTriangle.C.z = vert[(index[2] - firstVertex) * 3 + 2];
 
 		tri.push_back(objTriangle);
-	}
+		if(index.size() > 3){
+			for(int i = 3; i < index.size(); i++){
+				objTriangle.B = objTriangle.C;
 
-	offset = {0.0, 0.0, 3.0};
+				objTriangle.C.x = vert[(index[i] - firstVertex) * 3];
+				objTriangle.C.y = vert[(index[i] - firstVertex) * 3 + 1];
+				objTriangle.C.z = vert[(index[i] - firstVertex) * 3 + 2];
 
-	for(auto &triangle : tri){
-			triangle.A = triangle.A + offset;
-			triangle.B = triangle.B + offset;
-			triangle.C = triangle.C + offset;
+				tri.push_back(objTriangle);
+			}
+		}
 	}
 }
 
-void Object::setOffset(Vec3 offset){
-	for(auto &triangle : tri){
-			triangle.A = triangle.A - this->offset;
-			triangle.B = triangle.B - this->offset;
-			triangle.C = triangle.C - this->offset;
-	}
-
+void Object::SetOffset(Vec3 offset){
 	this->offset = offset;
+}
 
-	for(auto &triangle : tri){
-			triangle.A = triangle.A + offset;
-			triangle.B = triangle.B + offset;
-			triangle.C = triangle.C + offset;
-	}
+Vec3 Object::GetOffset(){
+	return offset;
 }
 
 void Object::RotateX(float angle){
 	float rad = angle * M_PI/180.0;
 	float cos_rad = cos(rad);
 	float sin_rad = sin(rad);
+	Triangle helper_triangle;
 
 	for(auto &triangle : tri){
-		triangle.A = triangle.A - offset;
-		triangle.B = triangle.B - offset;
-		triangle.C = triangle.C - offset;
-	}
+		helper_triangle = triangle;
 
-	for(auto &triangle : tri){
-		triangle.A.y = triangle.A.y * cos_rad + triangle.A.z * -sin_rad;
-		triangle.B.y = triangle.B.y * cos_rad + triangle.B.z * -sin_rad;
-		triangle.C.y = triangle.C.y * cos_rad + triangle.C.z * -sin_rad;
+		triangle.A.y = helper_triangle.A.y * cos_rad + helper_triangle.A.z * -sin_rad;
+		triangle.B.y = helper_triangle.B.y * cos_rad + helper_triangle.B.z * -sin_rad;
+		triangle.C.y = helper_triangle.C.y * cos_rad + helper_triangle.C.z * -sin_rad;
 
-		triangle.A.z = triangle.A.y * sin_rad + triangle.A.z * cos_rad;
-		triangle.B.z = triangle.B.y * sin_rad + triangle.B.z * cos_rad;
-		triangle.C.z = triangle.C.y * sin_rad + triangle.C.z * cos_rad;
-	}
-
-	for(auto &triangle : tri){
-		triangle.A = triangle.A + offset;
-		triangle.B = triangle.B + offset;
-		triangle.C = triangle.C + offset;
+		triangle.A.z = helper_triangle.A.y * sin_rad + helper_triangle.A.z * cos_rad;
+		triangle.B.z = helper_triangle.B.y * sin_rad + helper_triangle.B.z * cos_rad;
+		triangle.C.z = helper_triangle.C.y * sin_rad + helper_triangle.C.z * cos_rad;
 	}
 }
 
@@ -134,27 +115,18 @@ void Object::RotateY(float angle){
 	float rad = angle * M_PI/180.0;
 	float cos_rad = cos(rad);
 	float sin_rad = sin(rad);
+	Triangle helper_triangle;
 
 	for(auto &triangle : tri){
-		triangle.A = triangle.A - offset;
-		triangle.B = triangle.B - offset;
-		triangle.C = triangle.C - offset;
-	}
+		helper_triangle = triangle;
 
-	for(auto &triangle : tri){
-		triangle.A.x = triangle.A.x * cos_rad + triangle.A.z * -sin_rad;
-		triangle.B.x = triangle.B.x * cos_rad + triangle.B.z * -sin_rad;
-		triangle.C.x = triangle.C.x * cos_rad + triangle.C.z * -sin_rad;
+		triangle.A.x = helper_triangle.A.x * cos_rad + helper_triangle.A.z * sin_rad;
+		triangle.B.x = helper_triangle.B.x * cos_rad + helper_triangle.B.z * sin_rad;
+		triangle.C.x = helper_triangle.C.x * cos_rad + helper_triangle.C.z * sin_rad;
 
-		triangle.A.z = triangle.A.x * sin_rad + triangle.A.z * cos_rad;
-		triangle.B.z = triangle.B.x * sin_rad + triangle.B.z * cos_rad;
-		triangle.C.z = triangle.C.x * sin_rad + triangle.C.z * cos_rad;
-	}
-
-	for(auto &triangle : tri){
-		triangle.A = triangle.A + offset;
-		triangle.B = triangle.B + offset;
-		triangle.C = triangle.C + offset;
+		triangle.A.z = helper_triangle.A.x * -sin_rad + helper_triangle.A.z * cos_rad;
+		triangle.B.z = helper_triangle.B.x * -sin_rad + helper_triangle.B.z * cos_rad;
+		triangle.C.z = helper_triangle.C.x * -sin_rad + helper_triangle.C.z * cos_rad;
 	}
 }
 
@@ -162,26 +134,17 @@ void Object::RotateZ(float angle){
 	float rad = angle * M_PI/180.0;
 	float cos_rad = cos(rad);
 	float sin_rad = sin(rad);
+	Triangle helper_triangle;
 
 	for(auto &triangle : tri){
-		triangle.A = triangle.A - offset;
-		triangle.B = triangle.B - offset;
-		triangle.C = triangle.C - offset;
-	}
+		helper_triangle = triangle;
 
-	for(auto &triangle : tri){
-		triangle.A.x = triangle.A.x * cos_rad + triangle.A.y * -sin_rad;
-		triangle.B.x = triangle.B.x * cos_rad + triangle.B.y * -sin_rad;
-		triangle.C.x = triangle.C.x * cos_rad + triangle.C.y * -sin_rad;
+		triangle.A.x = helper_triangle.A.x * cos_rad + helper_triangle.A.y * -sin_rad;
+		triangle.B.x = helper_triangle.B.x * cos_rad + helper_triangle.B.y * -sin_rad;
+		triangle.C.x = helper_triangle.C.x * cos_rad + helper_triangle.C.y * -sin_rad;
 
-		triangle.A.y = triangle.A.x * sin_rad + triangle.A.y * cos_rad;
-		triangle.B.y = triangle.B.x * sin_rad + triangle.B.y * cos_rad;
-		triangle.C.y = triangle.C.x * sin_rad + triangle.C.y * cos_rad;
-	}
-
-	for(auto &triangle : tri){
-		triangle.A = triangle.A + offset;
-		triangle.B = triangle.B + offset;
-		triangle.C = triangle.C + offset;
+		triangle.A.y = helper_triangle.A.x * sin_rad + helper_triangle.A.y * cos_rad;
+		triangle.B.y = helper_triangle.B.x * sin_rad + helper_triangle.B.y * cos_rad;
+		triangle.C.y = helper_triangle.C.x * sin_rad + helper_triangle.C.y * cos_rad;
 	}
 }
