@@ -7,6 +7,7 @@
 #include "vectors.hpp"
 
 int main(){
+	std::srand(std::clock());
 	Canvas canvas = Canvas();
 	Object object = Object("./cube/cube.obj");
 	float z = 4.0;

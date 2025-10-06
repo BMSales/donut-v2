@@ -11,6 +11,7 @@ struct Triangle {
 	Vec3 A;
 	Vec3 B;
 	Vec3 C;
+	int color_code;
 };
 
 class Object {

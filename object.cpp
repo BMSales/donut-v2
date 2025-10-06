@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <ctime>
 #include <cmath>
 #include <vector>
 
@@ -12,6 +13,7 @@ Object::Object(std::string pathToFile){
   std::string line;
 	std::string objVertex;
 	std::string objFace;
+	int color_code;
 
 	Triangle objTriangle;
 
@@ -57,6 +59,8 @@ Object::Object(std::string pathToFile){
 	}
 
 	for(auto &index : vertIndex){
+		color_code = std::rand() % 256;
+		objTriangle.color_code = color_code;
 		objTriangle.A.x = vert[(index[0] - firstVertex) * 3];
 		objTriangle.A.y = vert[(index[0] - firstVertex) * 3 + 1];
 		objTriangle.A.z = vert[(index[0] - firstVertex) * 3 + 2];
@@ -72,6 +76,8 @@ Object::Object(std::string pathToFile){
 		tri.push_back(objTriangle);
 		if(index.size() > 3){
 			for(int i = 3; i < index.size(); i++){
+				color_code = std::rand() % 256;
+				objTriangle.color_code = color_code;
 				objTriangle.B = objTriangle.C;
 
 				objTriangle.C.x = vert[(index[i] - firstVertex) * 3];
