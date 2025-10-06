@@ -18,7 +18,7 @@ class Canvas{
 	private:
 		int height;
 		int width;
-		std::vector<std::vector<char>> screen;
+		std::vector<std::vector<int>> screen;
 
 		float fov;
 		float aspect_ratio;

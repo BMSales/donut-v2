@@ -134,7 +134,7 @@ void Canvas::DrawTriangle(Triangle* triangle){
 		for(int j = min_x; j <= max_x; j++){
 			position.x = j;
 			if(IsInTriangle(screen_space_vertex_1, screen_space_vertex_2, screen_space_vertex_3, position)){
-				screen[i][j] = '.';
+				screen[i][j] = 88;
 			}
 		}
 	}
@@ -153,8 +153,8 @@ void Canvas::DrawObject(Object* object){
 void Canvas::Print(){
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
-			std::cout << screen[i][j];
-			screen[i][j] = ' ';
+			std::cout << "\033[38;5;" + std::to_string(screen[i][j]) + "m" + "\u2588" + "\033[0m";
+			screen[i][j] = 0;
 		}
 		std::cout << std::endl;
 	}
