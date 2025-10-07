@@ -15,7 +15,7 @@ Object::Object(std::string pathToFile){
   std::string line;
 	std::string objVertex;
 	std::string objFace;
-  
+
 	Triangle objTriangle;
 
 	int k = 0;

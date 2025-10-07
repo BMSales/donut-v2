@@ -6,7 +6,7 @@
 #include "vectors.hpp"
 #include "object.hpp"
 
-class Canvas{
+class Canvas {
   public:
 		Canvas();
 

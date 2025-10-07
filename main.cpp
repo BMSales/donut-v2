@@ -7,13 +7,13 @@
 
 int main(){
 	Canvas canvas = Canvas();
-	Object object = Object("./cube/cube.obj");
+	Object object = Object("./torus/donut.obj");
   object.SetRandomColors();
-	float z = 5.0;
+	float z = 3.0;
 	object.SetOffset({0.0, 0.0, z});
 	float angle_1 = 0.5;
 	float angle_2 = -0.9;
-	float angle_3 = 1;
+	// float angle_3 = 1;
 
   while(1){
     canvas.DrawObject(&object);
@@ -22,6 +22,6 @@ int main(){
     canvas.ClearScreen();
 		object.RotateX(angle_1);
 		object.RotateY(angle_2);
-		object.RotateZ(angle_3);
+		// object.RotateZ(angle_3);
   }
 }
