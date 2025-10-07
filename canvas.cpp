@@ -1,13 +1,12 @@
-#include <iostream>
-#include <stdlib.h>
-#include <math.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-
 #include <ctime>
+#include <iostream>
+#include <math.h>
+#include <stdlib.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
-#include "object.hpp"
 #include "canvas.hpp"
+#include "object.hpp"
 #include "vectors.hpp"
 
 #define M_PI 3.14159265358979323846
@@ -48,10 +47,10 @@ void Canvas::ChangeFOV(float new_fov){
 	transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
 }
 
-int Canvas::LeftRightVector(Vec2 A, Vec2 B, Vec2 P){
+float Canvas::LeftRightVector(Vec2 A, Vec2 B, Vec2 P){
 	Vec2 vector_AB;
 	Vec2 vector_AP;
-	int rotation_assist;
+	float rotation_assist;
 
 	vector_AB = B - A;
 	vector_AP = P - A;
@@ -67,9 +66,9 @@ int Canvas::LeftRightVector(Vec2 A, Vec2 B, Vec2 P){
 }
 
 bool Canvas::IsInTriangle(Vec2 vertex_1, Vec2 vertex_2, Vec2 vertex_3, Vec2 position){
-	int AB = LeftRightVector(vertex_1, vertex_2, position);
-	int BC = LeftRightVector(vertex_2, vertex_3, position);
-	int CA = LeftRightVector(vertex_3, vertex_1, position);
+	float AB = LeftRightVector(vertex_1, vertex_2, position);
+	float BC = LeftRightVector(vertex_2, vertex_3, position);
+	float CA = LeftRightVector(vertex_3, vertex_1, position);
 
 	if(AB >= 0 && BC >= 0 && CA >= 0){
 		return true;
@@ -142,10 +141,13 @@ void Canvas::DrawTriangle(Triangle* triangle){
 
 void Canvas::DrawObject(Object* object){
 	Triangle render_triangle;
+
 	for(auto &triangle : (*object).tri){
 		render_triangle.A = triangle.A + object->GetOffset();
 		render_triangle.B = triangle.B + object->GetOffset();
 		render_triangle.C = triangle.C + object->GetOffset();
+    render_triangle.color_code = triangle.color_code;
+
 		DrawTriangle(&render_triangle);
 	}
 }

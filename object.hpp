@@ -26,6 +26,7 @@ class Object {
 		void RotateY(float angle);
 		void RotateZ(float angle);
 
+    void SetRandomColors();
 		void SetOffset(Vec3 offset);
 		Vec3 GetOffset();
 

@@ -1,7 +1,9 @@
-#include <iostream>
-#include <fstream>
-#include <ctime>
 #include <cmath>
+#include <ctime>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <random>
 #include <vector>
 
 #include "object.hpp"
@@ -13,8 +15,7 @@ Object::Object(std::string pathToFile){
   std::string line;
 	std::string objVertex;
 	std::string objFace;
-	int color_code;
-
+  
 	Triangle objTriangle;
 
 	int k = 0;
@@ -38,10 +39,8 @@ Object::Object(std::string pathToFile){
 		if(line.substr(0, 2) == "f "){
 			vertIndex.push_back(std::vector<int>());
 			for(int i = 2; line[i] != '\0'; i++){
-				if(objFace == "" || objFace == "-"){
-					objFace += line[i];
-				}
-				else if(line[i] == ' ' || line[i + 1] == '\0'){
+        objFace += line[i];
+				if(line[i] == ' ' || line[i + 1] == '\0'){
 					vertIndex[k].push_back(stoi(objFace));
 					objFace = "";
 				}
@@ -59,8 +58,6 @@ Object::Object(std::string pathToFile){
 	}
 
 	for(auto &index : vertIndex){
-		color_code = std::rand() % 256;
-		objTriangle.color_code = color_code;
 		objTriangle.A.x = vert[(index[0] - firstVertex) * 3];
 		objTriangle.A.y = vert[(index[0] - firstVertex) * 3 + 1];
 		objTriangle.A.z = vert[(index[0] - firstVertex) * 3 + 2];
@@ -76,10 +73,7 @@ Object::Object(std::string pathToFile){
 		tri.push_back(objTriangle);
 		if(index.size() > 3){
 			for(int i = 3; i < index.size(); i++){
-				color_code = std::rand() % 256;
-				objTriangle.color_code = color_code;
 				objTriangle.B = objTriangle.C;
-
 				objTriangle.C.x = vert[(index[i] - firstVertex) * 3];
 				objTriangle.C.y = vert[(index[i] - firstVertex) * 3 + 1];
 				objTriangle.C.z = vert[(index[i] - firstVertex) * 3 + 2];
@@ -88,6 +82,16 @@ Object::Object(std::string pathToFile){
 			}
 		}
 	}
+}
+
+void Object::SetRandomColors(){
+  std::random_device device;
+  std::default_random_engine engine(device());
+  std::uniform_int_distribution<int> uniform_dist(0, 255);
+
+  for(auto &triangle : tri){
+    triangle.color_code = uniform_dist(engine);
+  }
 }
 
 void Object::SetOffset(Vec3 offset){
