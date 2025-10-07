@@ -7,7 +7,7 @@
 
 int main(){
 	Canvas canvas = Canvas();
-	Object object = Object("./torus/donut.obj");
+	Object object = Object("./object/torus/donut.obj");
   object.SetRandomColors();
 	float z = 3.0;
 	object.SetOffset({0.0, 0.0, z});
