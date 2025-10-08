@@ -8,28 +8,28 @@
 typedef struct Triangle Triangle;
 
 struct Triangle {
-	Vec3 A;
-	Vec3 B;
-	Vec3 C;
-	int color_code;
+  Vec3 A;
+  Vec3 B;
+  Vec3 C;
+  int color_code;
 };
 
 class Object {
-	public:
-		Object(std::string pathToFile);
+  public:
+    Object(std::string pathToFile);
 
-		std::vector<Triangle> tri;
-		std::vector<float> vert;
-		std::vector<std::vector<int>> vertIndex;
+    std::vector<Triangle> tri;
+    std::vector<float> vert;
+    std::vector<std::vector<int>> vertIndex;
 
-		void RotateX(float angle);
-		void RotateY(float angle);
-		void RotateZ(float angle);
+    void RotateX(float angle);
+    void RotateY(float angle);
+    void RotateZ(float angle);
 
     void SetRandomColors();
-		void SetOffset(Vec3 offset);
-		Vec3 GetOffset();
+    void SetOffset(Vec3 offset);
+    Vec3 GetOffset();
 
   private:
-		Vec3 offset;
+    Vec3 offset;
 };
