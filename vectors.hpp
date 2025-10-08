@@ -61,10 +61,3 @@ struct Vec3 {
     return Vec3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
   }
 };
-
-struct Plane {
-	float a;
-	float b;
-	float c;
-	float d;
-};

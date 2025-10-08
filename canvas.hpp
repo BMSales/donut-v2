@@ -24,11 +24,10 @@ class Canvas {
     float aspect_ratio;
     float transform;
 
-    bool IsInTriangle(Vec2 vertex_1, Vec2 vertex_2, Vec2 vertex_3, Vec2 position);
+    bool IsInTriangle(Triangle screen_space_triangle, Vec2 position);
     bool AABB_Collision(int min_x, int max_x, int min_y, int max_y);
-		Plane CalculatePlane(Triangle triangle);
 
-    float LeftRightVector(Vec2 A, Vec2 B, Vec2 P);
-    Vec2 ScreenSpacePerspectiveProjection(Vec3 vertex);
+    float LeftRightVector(Vec3 A, Vec3 B, Vec2 P);
+    Triangle ScreenSpacePerspectiveProjection(Triangle triangle);
     void DrawTriangle(Triangle* triangle);
 };

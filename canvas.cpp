@@ -41,13 +41,14 @@ void Canvas::SetFOV(float new_fov){
   transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
 }
 
-float Canvas::LeftRightVector(Vec2 A, Vec2 B, Vec2 P){
-  Vec2 vector_AB;
-  Vec2 vector_AP;
+float Canvas::LeftRightVector(Vec3 A, Vec3 B, Vec2 P){
+  Vec3 vector_AB;
+  Vec3 vector_AP;
+	Vec3 T = {P.x, P.y, 0.0};
   float rotation_assist;
 
   vector_AB = B - A;
-  vector_AP = P - A;
+  vector_AP = T - A;
 
   // rotate AB to determine if P is on the right side 
   // or the left side of AB
@@ -59,10 +60,10 @@ float Canvas::LeftRightVector(Vec2 A, Vec2 B, Vec2 P){
   return vector_AB.Dot(vector_AP);
 }
 
-bool Canvas::IsInTriangle(Vec2 vertex_1, Vec2 vertex_2, Vec2 vertex_3, Vec2 position){
-  float AB = LeftRightVector(vertex_1, vertex_2, position);
-  float BC = LeftRightVector(vertex_2, vertex_3, position);
-  float CA = LeftRightVector(vertex_3, vertex_1, position);
+bool Canvas::IsInTriangle(Triangle screen_space_triangle, Vec2 position){
+  float AB = LeftRightVector(screen_space_triangle.A, screen_space_triangle.B, position);
+  float BC = LeftRightVector(screen_space_triangle.B, screen_space_triangle.C, position);
+  float CA = LeftRightVector(screen_space_triangle.C, screen_space_triangle.A, position);
 
   if(AB >= 0 && BC >= 0 && CA >= 0){
     return true;
@@ -71,16 +72,24 @@ bool Canvas::IsInTriangle(Vec2 vertex_1, Vec2 vertex_2, Vec2 vertex_3, Vec2 posi
   return false;
 }
 
-Vec2 Canvas::ScreenSpacePerspectiveProjection(Vec3 vertex){
-  Vec2 screen_space_vertex;
+Triangle Canvas::ScreenSpacePerspectiveProjection(Triangle triangle){
+  Triangle screen_space_triangle;
 
-  screen_space_vertex.x = vertex.x * transform/(aspect_ratio * vertex.z);
-  screen_space_vertex.y = vertex.y * transform/vertex.z;
+  screen_space_triangle.A.x = triangle.A.x * transform/(aspect_ratio * triangle.A.z);
+  screen_space_triangle.A.y = triangle.A.y * transform/triangle.A.z;
+	screen_space_triangle.B.x = triangle.B.x * transform/(aspect_ratio * triangle.B.z);
+  screen_space_triangle.B.y = triangle.B.y * transform/triangle.B.z;
+	screen_space_triangle.C.x = triangle.C.x * transform/(aspect_ratio * triangle.C.z);
+  screen_space_triangle.C.y = triangle.C.y * transform/triangle.C.z;
 
-  screen_space_vertex.x = ((screen_space_vertex.x + 1.0)/2.0) * width;
-  screen_space_vertex.y = ((-screen_space_vertex.y + 1.0)/2.0) * height;
+  screen_space_triangle.A.x = ((screen_space_triangle.A.x + 1.0)/2.0) * width;
+  screen_space_triangle.A.y = ((-screen_space_triangle.A.y + 1.0)/2.0) * height;
+	screen_space_triangle.B.x = ((screen_space_triangle.B.x + 1.0)/2.0) * width;
+  screen_space_triangle.B.y = ((-screen_space_triangle.B.y + 1.0)/2.0) * height;
+	screen_space_triangle.C.x = ((screen_space_triangle.C.x + 1.0)/2.0) * width;
+  screen_space_triangle.C.y = ((-screen_space_triangle.C.y + 1.0)/2.0) * height;
 
-  return screen_space_vertex;
+  return screen_space_triangle;
 }
 
 bool Canvas::AABB_Collision(int min_x, int max_x, int min_y, int max_y){
@@ -90,38 +99,14 @@ bool Canvas::AABB_Collision(int min_x, int max_x, int min_y, int max_y){
   return false;
 }
 
-Plane Canvas::CalculatePlane(Triangle triangle){
-	Plane plane;
-	Vec3 vector_AB = triangle.B - triangle.A;
-	Vec3 vector_BC = triangle.C - triangle.B;
-	Vec3 cross_product;
-
-	cross_product = vector_AB.Cross(vector_BC);
-
-	plane.a = cross_product.x;
-	plane.b = cross_product.y;
-	plane.c = cross_product.z;
-	plane.d = plane.a * triangle.A.x + plane.b * triangle.A.y + plane.c * triangle.A.z;
-
-	return plane;
-}
-
 void Canvas::DrawTriangle(Triangle* triangle){
-	Plane plane = CalculatePlane(*triangle);
-	Vec3 test_vector = {plane.a, plane.b, plane.c};
-	Vec3 camera_normal = {0.0, 0.0, 1.0};
-	std::cout << test_vector.Dot(camera_normal) << std::endl;
-	exit(-1);
+	Triangle screen_space_triangle = ScreenSpacePerspectiveProjection(*triangle);
+	Vec2 position;
 
-  Vec2 screen_space_vertex_1 = ScreenSpacePerspectiveProjection(triangle->A);
-  Vec2 screen_space_vertex_2 = ScreenSpacePerspectiveProjection(triangle->B);
-  Vec2 screen_space_vertex_3 = ScreenSpacePerspectiveProjection(triangle->C);
-  Vec2 position;
-
-  int min_x = std::min(std::min(screen_space_vertex_1.x, screen_space_vertex_2.x), screen_space_vertex_3.x);
-  int max_x = std::max(std::max(screen_space_vertex_1.x, screen_space_vertex_2.x), screen_space_vertex_3.x);
-  int min_y = std::min(std::min(screen_space_vertex_1.y, screen_space_vertex_2.y), screen_space_vertex_3.y);
-  int max_y = std::max(std::max(screen_space_vertex_1.y, screen_space_vertex_2.y), screen_space_vertex_3.y);
+  int min_x = std::min(std::min(screen_space_triangle.A.x, screen_space_triangle.B.x), screen_space_triangle.C.x);
+  int max_x = std::max(std::max(screen_space_triangle.A.x, screen_space_triangle.B.x), screen_space_triangle.C.x);
+  int min_y = std::min(std::min(screen_space_triangle.A.y, screen_space_triangle.B.y), screen_space_triangle.C.y);
+  int max_y = std::max(std::max(screen_space_triangle.A.y, screen_space_triangle.B.y), screen_space_triangle.C.y);
 
   if(!AABB_Collision(min_x, max_x, min_y, max_y)){
     return;
@@ -145,7 +130,7 @@ void Canvas::DrawTriangle(Triangle* triangle){
     position.y = i;
     for(int j = min_x; j <= max_x; j++){
       position.x = j;
-      if(IsInTriangle(screen_space_vertex_1, screen_space_vertex_2, screen_space_vertex_3, position)){
+      if(IsInTriangle(screen_space_triangle, position)){
         screen[i][j] = triangle->color_code;
       }
     }
