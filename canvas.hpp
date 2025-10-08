@@ -11,7 +11,7 @@ class Canvas {
     Canvas();
 
     void DrawObject(Object* object);
-    void ChangeFOV(float new_fov);
+    void SetFOV(float new_fov);
     void Print();
     void ClearScreen();
 
@@ -26,6 +26,7 @@ class Canvas {
 
     bool IsInTriangle(Vec2 vertex_1, Vec2 vertex_2, Vec2 vertex_3, Vec2 position);
     bool AABB_Collision(int min_x, int max_x, int min_y, int max_y);
+		Plane CalculatePlane(Triangle triangle);
 
     float LeftRightVector(Vec2 A, Vec2 B, Vec2 P);
     Vec2 ScreenSpacePerspectiveProjection(Vec3 vertex);

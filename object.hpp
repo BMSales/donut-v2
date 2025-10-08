@@ -16,11 +16,11 @@ struct Triangle {
 
 class Object {
   public:
-    Object(std::string pathToFile);
-
     std::vector<Triangle> tri;
     std::vector<float> vert;
     std::vector<std::vector<int>> vertIndex;
+
+    Object(std::string pathToFile);
 
     void RotateX(float angle);
     void RotateY(float angle);
@@ -33,3 +33,6 @@ class Object {
   private:
     Vec3 offset;
 };
+
+// TODO: 
+// optimize how vertices are stored

@@ -29,15 +29,9 @@ Canvas::Canvas(){
   for(int i = 0; i < height; i++){
     screen[i].reserve(width);
   }
-
-  for(int i = 0; i < height; i++){
-    for(int j = 0; j < width; j++){
-      screen[i][j] = ' ';
-    }
-  }
 }
 
-void Canvas::ChangeFOV(float new_fov){
+void Canvas::SetFOV(float new_fov){
   if(new_fov <= 0.0 || new_fov >= 180.0){
     std::cout << "invalid angle" << std::endl;
     exit(-1);
@@ -90,16 +84,35 @@ Vec2 Canvas::ScreenSpacePerspectiveProjection(Vec3 vertex){
 }
 
 bool Canvas::AABB_Collision(int min_x, int max_x, int min_y, int max_y){
-  if(
-      min_x < width && max_x >= 0 &&
-      min_y < height && max_y >= 0
-    ){
+  if(min_x < width && max_x >= 0 && min_y < height && max_y >= 0){
     return true;
   }
   return false;
 }
 
+Plane Canvas::CalculatePlane(Triangle triangle){
+	Plane plane;
+	Vec3 vector_AB = triangle.B - triangle.A;
+	Vec3 vector_BC = triangle.C - triangle.B;
+	Vec3 cross_product;
+
+	cross_product = vector_AB.Cross(vector_BC);
+
+	plane.a = cross_product.x;
+	plane.b = cross_product.y;
+	plane.c = cross_product.z;
+	plane.d = plane.a * triangle.A.x + plane.b * triangle.A.y + plane.c * triangle.A.z;
+
+	return plane;
+}
+
 void Canvas::DrawTriangle(Triangle* triangle){
+	Plane plane = CalculatePlane(*triangle);
+	Vec3 test_vector = {plane.a, plane.b, plane.c};
+	Vec3 camera_normal = {0.0, 0.0, 1.0};
+	std::cout << test_vector.Dot(camera_normal) << std::endl;
+	exit(-1);
+
   Vec2 screen_space_vertex_1 = ScreenSpacePerspectiveProjection(triangle->A);
   Vec2 screen_space_vertex_2 = ScreenSpacePerspectiveProjection(triangle->B);
   Vec2 screen_space_vertex_3 = ScreenSpacePerspectiveProjection(triangle->C);
@@ -167,3 +180,6 @@ void Canvas::Print(){
 void Canvas::ClearScreen(){
   std::cout << "\033[2J\033[H";
 }
+
+// TODO:
+// check if a triangle is facing the camera or not before trying to draw it

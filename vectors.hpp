@@ -2,6 +2,7 @@
 
 typedef struct Vec2 Vec2;
 typedef struct Vec3 Vec3;
+typedef struct Plane Plane;
 
 struct Vec2 {
   float x;
@@ -35,6 +36,16 @@ struct Vec3 {
     return x * b.x + y * b.y + z * b.z;
   };
 
+	Vec3 Cross(Vec3 b){
+		Vec3 product;
+
+		product.x = y * b.z - z * b.y;
+		product.y = - (x * b.z - z * b.x);
+		product.z = x * b.y - y * b.x;
+
+		return product;
+	}
+
   Vec3(){}
   Vec3(float _x, float _y, float _z){
     x = _x;
@@ -49,4 +60,11 @@ struct Vec3 {
   friend Vec3 operator- (Vec3 lhs, const Vec3& rhs){
     return Vec3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
   }
+};
+
+struct Plane {
+	float a;
+	float b;
+	float c;
+	float d;
 };
