@@ -153,12 +153,14 @@ void Canvas::DrawObject(Object* object){
 }
 
 void Canvas::Print(){
+  std::string line;
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
-			std::cout << "\033[38;5;" + std::to_string(screen[i][j]) + "m\u2588\033[0m";
+      line += "\033[38;5;" + std::to_string(screen[i][j]) + "m\u2588\033[0m";
 			screen[i][j] = 0;
 		}
-		std::cout << std::endl;
+    std::cout << line << std::endl;
+    line = "";
 	}
 }
 

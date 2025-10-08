@@ -130,13 +130,13 @@ void Object::RotateY(float angle){
 	for(auto &triangle : tri){
 		helper_triangle = triangle;
 
-		triangle.A.x = helper_triangle.A.x * cos_rad + helper_triangle.A.z * sin_rad;
-		triangle.B.x = helper_triangle.B.x * cos_rad + helper_triangle.B.z * sin_rad;
-		triangle.C.x = helper_triangle.C.x * cos_rad + helper_triangle.C.z * sin_rad;
+		triangle.A.x = helper_triangle.A.x * cos_rad + helper_triangle.A.z * -sin_rad;
+		triangle.B.x = helper_triangle.B.x * cos_rad + helper_triangle.B.z * -sin_rad;
+		triangle.C.x = helper_triangle.C.x * cos_rad + helper_triangle.C.z * -sin_rad;
 
-		triangle.A.z = helper_triangle.A.x * -sin_rad + helper_triangle.A.z * cos_rad;
-		triangle.B.z = helper_triangle.B.x * -sin_rad + helper_triangle.B.z * cos_rad;
-		triangle.C.z = helper_triangle.C.x * -sin_rad + helper_triangle.C.z * cos_rad;
+		triangle.A.z = helper_triangle.A.x * sin_rad + helper_triangle.A.z * cos_rad;
+		triangle.B.z = helper_triangle.B.x * sin_rad + helper_triangle.B.z * cos_rad;
+		triangle.C.z = helper_triangle.C.x * sin_rad + helper_triangle.C.z * cos_rad;
 	}
 }
 
