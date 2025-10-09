@@ -25,13 +25,16 @@ int main(int argc, char* argv[]){
 
   Canvas canvas = Canvas();
   Object object = Object(pathToObject);
+  Object cube = Object("./object/cube/cube.obj");
 	canvas.SetFOV(fov);
   object.SetRandomColors();
+	cube.SetRandomColors();
   object.SetOffset({0.0, 0.0, z});
-	object.RotateY(angle_2);
+  cube.SetOffset({0.0, 0.0, 2.0});
 
   while(1){
     canvas.DrawObject(&object);
+    canvas.DrawObject(&cube);
     canvas.Print();
     usleep(16*1000);
     canvas.ClearScreen();
