@@ -25,11 +25,11 @@ Canvas::Canvas(){
   aspect_ratio = (float)width/(float)height;
   transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
 
-  screen.reserve(height);
-  z_buffer.reserve(height);
+  screen.resize(height);
+  z_buffer.resize(height);
   for(int i = 0; i < height; i++){
-    screen[i].reserve(width);
-    z_buffer[i].reserve(width);
+    screen[i].resize(width);
+    z_buffer[i].resize(width);
   }
 }
 
@@ -175,15 +175,22 @@ void Canvas::DrawObject(Object* object){
 
 void Canvas::Print(){
   std::string line;
+  std::vector<std::string> lines;
   for(int i = 0; i < height; i++){
     for(int j = 0; j < width; j++){
       line += "\033[38;5;" + std::to_string(screen[i][j]) + "m\u2588\033[0m";
       screen[i][j] = 0;
       z_buffer[i][j] = 0.0;
     }
-    std::cout << line << std::endl;
-    line = "";
+    lines.push_back(line);
+    line.clear();
   }
+
+  for (auto& l : lines) {
+    std::cout << l << '\n';
+  }
+
+  std::cout << std::flush;
 }
 
 void Canvas::ClearScreen(){
