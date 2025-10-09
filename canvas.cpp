@@ -26,8 +26,10 @@ Canvas::Canvas(){
   transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
 
   screen.reserve(height);
+  z_buffer.reserve(height);
   for(int i = 0; i < height; i++){
     screen[i].reserve(width);
+    z_buffer[i].reserve(width);
   }
 }
 
@@ -41,32 +43,33 @@ void Canvas::SetFOV(float new_fov){
   transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
 }
 
-float Canvas::LeftRightVector(Vec3 A, Vec3 B, Vec2 P){
-  Vec3 vector_AB;
-  Vec3 vector_AP;
-	Vec3 T = {P.x, P.y, 0.0};
-  float rotation_assist;
+float Canvas::SignedTriangleArea(Triangle triangle){
+  Vec3 vector_AB = triangle.B - triangle.A;
+  Vec3 vector_AP = triangle.C - triangle.A;
+  Vec3 rotated_AB = {-vector_AB.y, vector_AB.x, vector_AB.z};
 
-  vector_AB = B - A;
-  vector_AP = T - A;
+  // float base = vector_AB.Norm();
+  // float height = rotated_AB.Dot(vector_AP);
 
-  // rotate AB to determine if P is on the right side 
-  // or the left side of AB
-  // the rotation is done according to screen space
-  rotation_assist = vector_AB.x;
-  vector_AB.x = -vector_AB.y;
-  vector_AB.y = rotation_assist;
-
-  return vector_AB.Dot(vector_AP);
+  return rotated_AB.Dot(vector_AP)/2;
 }
 
-bool Canvas::IsInTriangle(Triangle screen_space_triangle, Vec2 position){
-  float AB = LeftRightVector(screen_space_triangle.A, screen_space_triangle.B, position);
-  float BC = LeftRightVector(screen_space_triangle.B, screen_space_triangle.C, position);
-  float CA = LeftRightVector(screen_space_triangle.C, screen_space_triangle.A, position);
+bool Canvas::CanDrawPixel(Triangle screen_space_triangle, Vec3 position){
+  Triangle triangle_A = {screen_space_triangle.B, screen_space_triangle.C, position, 0};
+  Triangle triangle_B = {screen_space_triangle.C, screen_space_triangle.A, position, 0};
+  Triangle triangle_C = {screen_space_triangle.A, screen_space_triangle.B, position, 0};
 
-  if(AB >= 0 && BC >= 0 && CA >= 0){
-    return true;
+  float area_A = SignedTriangleArea(triangle_A);
+  float area_B = SignedTriangleArea(triangle_B);
+  float area_C = SignedTriangleArea(triangle_C);
+  float z_position = (screen_space_triangle.A.z * area_A + screen_space_triangle.B.z * area_B + screen_space_triangle.C.z * area_C)/(area_A + area_B + area_C); 
+  float one_over_z = 1/z_position;
+
+  if(area_A >= 0 && area_B >= 0 && area_C >= 0){
+    if(one_over_z > z_buffer[position.y][position.x]){
+      z_buffer[position.y][position.x] = one_over_z;
+      return true;
+    }
   }
 
   return false;
@@ -101,7 +104,7 @@ bool Canvas::AABB_Collision(int min_x, int max_x, int min_y, int max_y){
 
 void Canvas::DrawTriangle(Triangle* triangle){
 	Triangle screen_space_triangle = ScreenSpacePerspectiveProjection(*triangle);
-	Vec2 position;
+	Vec3 position;
 
   int min_x = std::min(std::min(screen_space_triangle.A.x, screen_space_triangle.B.x), screen_space_triangle.C.x);
   int max_x = std::max(std::max(screen_space_triangle.A.x, screen_space_triangle.B.x), screen_space_triangle.C.x);
@@ -130,7 +133,7 @@ void Canvas::DrawTriangle(Triangle* triangle){
     position.y = i;
     for(int j = min_x; j <= max_x; j++){
       position.x = j;
-      if(IsInTriangle(screen_space_triangle, position)){
+      if(CanDrawPixel(screen_space_triangle, position)){
         screen[i][j] = triangle->color_code;
       }
     }
@@ -156,6 +159,7 @@ void Canvas::Print(){
     for(int j = 0; j < width; j++){
       line += "\033[38;5;" + std::to_string(screen[i][j]) + "m\u2588\033[0m";
       screen[i][j] = 0;
+      z_buffer[i][j] = 0.0;
     }
     std::cout << line << std::endl;
     line = "";

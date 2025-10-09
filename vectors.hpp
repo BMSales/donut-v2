@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 typedef struct Vec2 Vec2;
 typedef struct Vec3 Vec3;
 typedef struct Plane Plane;
@@ -7,6 +9,10 @@ typedef struct Plane Plane;
 struct Vec2 {
   float x;
   float y;
+
+  float Norm(){
+    return std::sqrt(std::pow(x, 2) + std::pow(y, 2));
+  }
 
   float Dot(Vec2 b){
     return x * b.x + y * b.y;
@@ -31,6 +37,10 @@ struct Vec3 {
   float x;
   float y;
   float z;
+
+  float Norm(){
+    return std::sqrt(std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2));
+  }
 
   float Dot(Vec3 b){
     return x * b.x + y * b.y + z * b.z;

@@ -19,15 +19,16 @@ class Canvas {
     int height;
     int width;
     std::vector<std::vector<int>> screen;
+    std::vector<std::vector<int>> z_buffer;
 
     float fov;
     float aspect_ratio;
     float transform;
 
-    bool IsInTriangle(Triangle screen_space_triangle, Vec2 position);
+    bool CanDrawPixel(Triangle screen_space_triangle, Vec3 position);
     bool AABB_Collision(int min_x, int max_x, int min_y, int max_y);
 
-    float LeftRightVector(Vec3 A, Vec3 B, Vec2 P);
+    float SignedTriangleArea(Triangle triangle);
     Triangle ScreenSpacePerspectiveProjection(Triangle triangle);
     void DrawTriangle(Triangle* triangle);
 };
