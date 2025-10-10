@@ -18,7 +18,7 @@ int main(int argc, char* argv[]){
 	}
 
 	float fov = 45;
-	float z = 20.0;
+	float z = 3.0;
   float angle_1 = 0.5;
   float angle_2 = -0.9;
   float angle_3 = 0.3;
@@ -34,8 +34,8 @@ int main(int argc, char* argv[]){
     canvas.Print();
     usleep(16*1000);
     canvas.ClearScreen();
-    // object.RotateX(angle_1);
+    object.RotateX(angle_1);
     object.RotateY(angle_2);
-    // object.RotateZ(angle_3);
+    object.RotateZ(angle_3);
   }
 }

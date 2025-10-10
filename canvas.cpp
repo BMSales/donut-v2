@@ -113,6 +113,21 @@ bool Canvas::AABB_Collision(int min_x, int max_x, int min_y, int max_y){
   return false;
 }
 
+int Canvas::DepthColor(int i, int j){
+  std::vector<int> codes;
+  int code = (int)(z_buffer[i][j] * 23);
+  for(int i = 232; i < 256; i++){
+    codes.push_back(i);
+  }
+
+  if(code >= 32){
+    return codes[31];
+  }
+  else {
+    return codes[code];
+  }
+}
+
 void Canvas::DrawTriangle(Triangle* triangle){
 	Triangle screen_space_triangle = ScreenSpacePerspectiveProjection(*triangle);
 	Vec3 position;
@@ -130,6 +145,7 @@ void Canvas::DrawTriangle(Triangle* triangle){
   int max_x = std::max(std::max(screen_space_triangle.A.x, screen_space_triangle.B.x), screen_space_triangle.C.x);
   int min_y = std::min(std::min(screen_space_triangle.A.y, screen_space_triangle.B.y), screen_space_triangle.C.y);
   int max_y = std::max(std::max(screen_space_triangle.A.y, screen_space_triangle.B.y), screen_space_triangle.C.y);
+  int depth_color_code;
 
   if(!AABB_Collision(min_x, max_x, min_y, max_y)){
     return;
@@ -154,7 +170,8 @@ void Canvas::DrawTriangle(Triangle* triangle){
     for(int j = min_x; j <= max_x; j++){
       position.x = j;
       if(CanDrawPixel(screen_space_triangle, position)){
-        screen[i][j] = triangle->color_code;
+        depth_color_code = DepthColor(i, j);
+        screen[i][j] = depth_color_code;
       }
     }
   }
