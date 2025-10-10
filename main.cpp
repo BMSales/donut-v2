@@ -18,23 +18,19 @@ int main(int argc, char* argv[]){
 	}
 
 	float fov = 45;
-	float z = 4.0;
+	float z = 20.0;
   float angle_1 = 0.5;
   float angle_2 = -0.9;
   float angle_3 = 0.3;
 
   Canvas canvas = Canvas();
   Object object = Object(pathToObject);
-  Object cube = Object("./object/cube/cube.obj");
 	canvas.SetFOV(fov);
   object.SetRandomColors();
-	cube.SetRandomColors();
   object.SetOffset({0.0, 0.0, z});
-  cube.SetOffset({0.0, 0.0, 2.0});
 
   while(1){
     canvas.DrawObject(&object);
-    canvas.DrawObject(&cube);
     canvas.Print();
     usleep(16*1000);
     canvas.ClearScreen();
