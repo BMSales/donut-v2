@@ -42,6 +42,16 @@ struct Vec3 {
     return std::sqrt(std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2));
   }
 
+  Vec3 Normalize(){
+    float norm = Norm();
+    Vec3 normalized_vector;
+    normalized_vector.x /= norm;
+    normalized_vector.y /= norm;
+    normalized_vector.z /= norm;
+
+    return normalized_vector;
+  }
+
   float Dot(Vec3 b){
     return x * b.x + y * b.y + z * b.z;
   };

@@ -18,7 +18,7 @@ int main(int argc, char* argv[]){
 	}
 
 	float fov = 45;
-	float z = 2.5;
+	float z = 4.0;
   float angle_1 = 1.5;
   float angle_2 = -0.9;
   float angle_3 = 0.3;

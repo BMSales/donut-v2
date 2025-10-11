@@ -31,6 +31,9 @@ Canvas::Canvas(){
     screen[i].resize(width);
     z_buffer[i].resize(width);
   }
+  for(int i = 232; i < 256; i++){
+    depth_color_code.push_back(i);
+  }
 }
 
 void Canvas::SetFOV(float new_fov){
@@ -44,12 +47,12 @@ void Canvas::SetFOV(float new_fov){
 }
 
 float Canvas::SignedTriangleArea(Triangle triangle){
-	Vec2 triangle_A = {triangle.A.x, triangle.A.y};
-	Vec2 triangle_B = {triangle.B.x, triangle.B.y};
-	Vec2 triangle_C = {triangle.C.x, triangle.C.y};
+	Vec2 vertex_A = {triangle.A.x, triangle.A.y};
+	Vec2 vertex_B = {triangle.B.x, triangle.B.y};
+	Vec2 vertex_C = {triangle.C.x, triangle.C.y};
 
-  Vec2 vector_AB = triangle_B - triangle_A;
-  Vec2 vector_AP = triangle_C - triangle_A;
+  Vec2 vector_AB = vertex_B - vertex_A;
+  Vec2 vector_AP = vertex_C - vertex_A;
   Vec2 rotated_AB = {-vector_AB.y, vector_AB.x};
 
   float base = vector_AB.Norm();
@@ -59,9 +62,9 @@ float Canvas::SignedTriangleArea(Triangle triangle){
 }
 
 bool Canvas::CanDrawPixel(Triangle screen_space_triangle, Vec3 position){
-  Triangle triangle_A = {screen_space_triangle.B, screen_space_triangle.C, position, 0};
-  Triangle triangle_B = {screen_space_triangle.C, screen_space_triangle.A, position, 0};
-  Triangle triangle_C = {screen_space_triangle.A, screen_space_triangle.B, position, 0};
+  Triangle triangle_A = {screen_space_triangle.B, screen_space_triangle.C, position};
+  Triangle triangle_B = {screen_space_triangle.C, screen_space_triangle.A, position};
+  Triangle triangle_C = {screen_space_triangle.A, screen_space_triangle.B, position};
 
   float area_A = SignedTriangleArea(triangle_A);
   float area_B = SignedTriangleArea(triangle_B);
@@ -113,18 +116,14 @@ bool Canvas::AABB_Collision(int min_x, int max_x, int min_y, int max_y){
   return false;
 }
 
-int Canvas::DepthColor(int i, int j){
-  std::vector<int> codes;
+int Canvas::DepthMap(int i, int j){
   int code = (int)(z_buffer[i][j] * 23);
-  for(int i = 232; i < 256; i++){
-    codes.push_back(i);
-  }
 
   if(code >= 32){
-    return codes[31];
+    return depth_color_code[31];
   }
   else {
-    return codes[code];
+    return depth_color_code[code];
   }
 }
 
@@ -145,7 +144,6 @@ void Canvas::DrawTriangle(Triangle* triangle){
   int max_x = std::max(std::max(screen_space_triangle.A.x, screen_space_triangle.B.x), screen_space_triangle.C.x);
   int min_y = std::min(std::min(screen_space_triangle.A.y, screen_space_triangle.B.y), screen_space_triangle.C.y);
   int max_y = std::max(std::max(screen_space_triangle.A.y, screen_space_triangle.B.y), screen_space_triangle.C.y);
-  int depth_color_code;
 
   if(!AABB_Collision(min_x, max_x, min_y, max_y)){
     return;
@@ -170,8 +168,7 @@ void Canvas::DrawTriangle(Triangle* triangle){
     for(int j = min_x; j <= max_x; j++){
       position.x = j;
       if(CanDrawPixel(screen_space_triangle, position)){
-        depth_color_code = DepthColor(i, j);
-        screen[i][j] = depth_color_code;
+        screen[i][j] = DepthMap(i, j);
       }
     }
   }

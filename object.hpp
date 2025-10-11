@@ -11,6 +11,7 @@ struct Triangle {
   Vec3 A;
   Vec3 B;
   Vec3 C;
+  Vec3 normal;
   int color_code;
 };
 
@@ -18,7 +19,11 @@ class Object {
   public:
     std::vector<Triangle> tri;
     std::vector<float> vert;
+    std::vector<float> texture;
+    std::vector<float> faceNormal;
     std::vector<std::vector<int>> vertIndex;
+    std::vector<std::vector<int>> textureIndex;
+    std::vector<std::vector<int>> normIndex;
 
     Object(std::string pathToFile);
 

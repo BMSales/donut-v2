@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <iostream>
 #include <random>
+#include <ranges>
 #include <vector>
 
 #include "object.hpp"
@@ -14,7 +15,10 @@ Object::Object(std::string pathToFile){
   std::ifstream object_file(pathToFile);
   std::string line;
   std::string objVertex;
+  std::string objTexture;
+  std::string objNormal;
   std::string objFace;
+  char faceData = 'v';
 
   Triangle objTriangle;
 
@@ -36,18 +40,52 @@ Object::Object(std::string pathToFile){
       }
     }
 
+    if(line.substr(0, 2) == "vt"){
+      for(int i = 3; line[i] != '\0'; i++){
+        objTexture += line[i];
+        if(line[i] == ' ' || line[i + 1] == '\0'){
+          texture.push_back(stof(objTexture));
+          objTexture = "";
+        }
+      }
+    }
+
+    if(line.substr(0, 2) == "vn"){
+      for(int i = 3; line[i] != '\0'; i++){
+        objNormal += line[i];
+        if(line[i] == ' ' || line[i + 1] == '\0'){
+          faceNormal.push_back(stof(objNormal));
+          objNormal = "";
+        }
+      }
+    }
+
     if(line.substr(0, 2) == "f "){
       vertIndex.push_back(std::vector<int>());
+      textureIndex.push_back(std::vector<int>());
+      normIndex.push_back(std::vector<int>());
       for(int i = 2; line[i] != '\0'; i++){
         objFace += line[i];
-        if(line[i] == ' ' || line[i + 1] == '\0'){
+        if(line[i] == '/' && faceData == 'v'){
           vertIndex[k].push_back(stoi(objFace));
           objFace = "";
+          faceData = 't';
+        }
+        else if(line[i] == '/' && faceData == 't'){
+          textureIndex[k].push_back(stoi(objFace));
+          objFace = "";
+        }
+        else if(line[i] == ' ' || line[i + 1] == '\0'){
+          normIndex[k].push_back(stoi(objFace));
+          objFace = "";
+          faceData = 'v';
         }
       }
       k++;
     }
   }
+
+
 
   int firstVertex;
   if(vertIndex[0][0] < 0){
@@ -57,26 +95,34 @@ Object::Object(std::string pathToFile){
     firstVertex = 1;
   }
 
-  for(auto &index : vertIndex){
-    objTriangle.A.x = vert[(index[0] - firstVertex) * 3];
-    objTriangle.A.y = vert[(index[0] - firstVertex) * 3 + 1];
-    objTriangle.A.z = vert[(index[0] - firstVertex) * 3 + 2];
+  for(auto [vertex, texture, normal] : std::views::zip(vertIndex, textureIndex, normIndex)){
+    objTriangle.A.x = vert[(vertex[0] - firstVertex) * 3];
+    objTriangle.A.y = vert[(vertex[0] - firstVertex) * 3 + 1];
+    objTriangle.A.z = vert[(vertex[0] - firstVertex) * 3 + 2];
 
-    objTriangle.B.x = vert[(index[1] - firstVertex) * 3];
-    objTriangle.B.y = vert[(index[1] - firstVertex) * 3 + 1];
-    objTriangle.B.z = vert[(index[1] - firstVertex) * 3 + 2];
+    objTriangle.B.x = vert[(vertex[1] - firstVertex) * 3];
+    objTriangle.B.y = vert[(vertex[1] - firstVertex) * 3 + 1];
+    objTriangle.B.z = vert[(vertex[1] - firstVertex) * 3 + 2];
 
-    objTriangle.C.x = vert[(index[2] - firstVertex) * 3];
-    objTriangle.C.y = vert[(index[2] - firstVertex) * 3 + 1];
-    objTriangle.C.z = vert[(index[2] - firstVertex) * 3 + 2];
+    objTriangle.C.x = vert[(vertex[2] - firstVertex) * 3];
+    objTriangle.C.y = vert[(vertex[2] - firstVertex) * 3 + 1];
+    objTriangle.C.z = vert[(vertex[2] - firstVertex) * 3 + 2];
+
+    objTriangle.normal.x = faceNormal[(normal[0] - firstVertex) * 3];
+    objTriangle.normal.y = faceNormal[(normal[0] - firstVertex) * 3 + 1];
+    objTriangle.normal.z = faceNormal[(normal[0] - firstVertex) * 3 + 2];
 
     tri.push_back(objTriangle);
-    if(index.size() > 3){
-      for(int i = 3; i < index.size(); i++){
+    if(vertex.size() > 3){
+      for(int i = 3; i < vertex.size(); i++){
         objTriangle.B = objTriangle.C;
-        objTriangle.C.x = vert[(index[i] - firstVertex) * 3];
-        objTriangle.C.y = vert[(index[i] - firstVertex) * 3 + 1];
-        objTriangle.C.z = vert[(index[i] - firstVertex) * 3 + 2];
+        objTriangle.C.x = vert[(vertex[i] - firstVertex) * 3];
+        objTriangle.C.y = vert[(vertex[i] - firstVertex) * 3 + 1];
+        objTriangle.C.z = vert[(vertex[i] - firstVertex) * 3 + 2];
+
+        objTriangle.normal.x = faceNormal[(normal[i] - firstVertex) * 3];
+        objTriangle.normal.y = faceNormal[(normal[i] - firstVertex) * 3 + 1];
+        objTriangle.normal.z = faceNormal[(normal[i] - firstVertex) * 3 + 2];
 
         tri.push_back(objTriangle);
       }

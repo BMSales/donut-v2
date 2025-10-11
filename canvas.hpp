@@ -20,6 +20,7 @@ class Canvas {
     int width;
     std::vector<std::vector<int>> screen;
     std::vector<std::vector<float>> z_buffer;
+    std::vector<int> depth_color_code;
 
     float fov;
     float aspect_ratio;
@@ -28,7 +29,7 @@ class Canvas {
     bool CanDrawPixel(Triangle screen_space_triangle, Vec3 position);
     bool AABB_Collision(int min_x, int max_x, int min_y, int max_y);
 
-    int DepthColor(int i, int j);
+    int DepthMap(int i, int j);
 
     float SignedTriangleArea(Triangle triangle);
     Triangle ScreenSpacePerspectiveProjection(Triangle triangle);
