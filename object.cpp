@@ -85,8 +85,6 @@ Object::Object(std::string pathToFile){
     }
   }
 
-
-
   int firstVertex;
   if(vertIndex[0][0] < 0){
     firstVertex = - vert.size() / 3;
@@ -112,6 +110,10 @@ Object::Object(std::string pathToFile){
     objTriangle.normal.y = faceNormal[(normal[0] - firstVertex) * 3 + 1];
     objTriangle.normal.z = faceNormal[(normal[0] - firstVertex) * 3 + 2];
 
+    objTriangle.normal.x = objTriangle.normal.x / objTriangle.normal.Norm();
+    objTriangle.normal.y = objTriangle.normal.y / objTriangle.normal.Norm();
+    objTriangle.normal.z = objTriangle.normal.z / objTriangle.normal.Norm();
+    
     tri.push_back(objTriangle);
     if(vertex.size() > 3){
       for(int i = 3; i < vertex.size(); i++){
@@ -123,6 +125,10 @@ Object::Object(std::string pathToFile){
         objTriangle.normal.x = faceNormal[(normal[i] - firstVertex) * 3];
         objTriangle.normal.y = faceNormal[(normal[i] - firstVertex) * 3 + 1];
         objTriangle.normal.z = faceNormal[(normal[i] - firstVertex) * 3 + 2];
+
+        objTriangle.normal.x = objTriangle.normal.x / objTriangle.normal.Norm();
+        objTriangle.normal.y = objTriangle.normal.y / objTriangle.normal.Norm();
+        objTriangle.normal.z = objTriangle.normal.z / objTriangle.normal.Norm();
 
         tri.push_back(objTriangle);
       }
@@ -164,6 +170,9 @@ void Object::RotateX(float angle){
     triangle.A.z = helper_triangle.A.y * sin_rad + helper_triangle.A.z * cos_rad;
     triangle.B.z = helper_triangle.B.y * sin_rad + helper_triangle.B.z * cos_rad;
     triangle.C.z = helper_triangle.C.y * sin_rad + helper_triangle.C.z * cos_rad;
+
+    triangle.normal.y = helper_triangle.normal.y * cos_rad + helper_triangle.normal.z * -sin_rad;
+    triangle.normal.z = helper_triangle.normal.y * sin_rad + helper_triangle.normal.z * cos_rad;
   }
 }
 
@@ -183,6 +192,9 @@ void Object::RotateY(float angle){
     triangle.A.z = helper_triangle.A.x * sin_rad + helper_triangle.A.z * cos_rad;
     triangle.B.z = helper_triangle.B.x * sin_rad + helper_triangle.B.z * cos_rad;
     triangle.C.z = helper_triangle.C.x * sin_rad + helper_triangle.C.z * cos_rad;
+
+    triangle.normal.x = helper_triangle.normal.x * cos_rad + helper_triangle.normal.z * -sin_rad;
+    triangle.normal.z = helper_triangle.normal.x * sin_rad + helper_triangle.normal.z * cos_rad;
   }
 }
 
@@ -202,5 +214,8 @@ void Object::RotateZ(float angle){
     triangle.A.y = helper_triangle.A.x * sin_rad + helper_triangle.A.y * cos_rad;
     triangle.B.y = helper_triangle.B.x * sin_rad + helper_triangle.B.y * cos_rad;
     triangle.C.y = helper_triangle.C.x * sin_rad + helper_triangle.C.y * cos_rad;
+
+    triangle.normal.x = helper_triangle.normal.x * cos_rad + helper_triangle.normal.y * -sin_rad;
+    triangle.normal.y = helper_triangle.normal.x * sin_rad + helper_triangle.normal.y * cos_rad;
   }
 }

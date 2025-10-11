@@ -18,15 +18,14 @@ int main(int argc, char* argv[]){
 	}
 
 	float fov = 45;
-	float z = 4.0;
-  float angle_1 = 1.5;
-  float angle_2 = -0.9;
-  float angle_3 = 0.3;
+	float z = 3.5;
+  float angle_1 = 1.2;
+  float angle_2 = 1.5;
+  float angle_3 = 1.3;
 
   Canvas canvas = Canvas();
   Object object = Object(pathToObject);
 	canvas.SetFOV(fov);
-  object.SetRandomColors();
   object.SetOffset({0.0, 0.0, z});
 
   while(1){

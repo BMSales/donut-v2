@@ -32,7 +32,7 @@ Canvas::Canvas(){
     z_buffer[i].resize(width);
   }
   for(int i = 232; i < 256; i++){
-    depth_color_code.push_back(i);
+    bw_color_code.push_back(i);
   }
 }
 
@@ -119,16 +119,25 @@ bool Canvas::AABB_Collision(int min_x, int max_x, int min_y, int max_y){
 int Canvas::DepthMap(int i, int j){
   int code = (int)(z_buffer[i][j] * 23);
 
-  if(code >= 32){
-    return depth_color_code[31];
+  if(code >= 23){
+    return bw_color_code[22];
   }
   else {
-    return depth_color_code[code];
+    return bw_color_code[code];
   }
+}
+
+int Canvas::Lighting(Triangle triangle, Vec3 light){
+  float dot_product = triangle.normal.Dot(light);
+  if(dot_product < 0.0){
+    return bw_color_code[(int)(dot_product * -22)];
+  }
+  return 232;
 }
 
 void Canvas::DrawTriangle(Triangle* triangle){
 	Triangle screen_space_triangle = ScreenSpacePerspectiveProjection(*triangle);
+  Vec3 light = {0.0, -1.0, 1.0};
 	Vec3 position;
 
 	Vec3 AB = screen_space_triangle.B - screen_space_triangle.A;
@@ -141,6 +150,9 @@ void Canvas::DrawTriangle(Triangle* triangle){
 	if(triangle_normal_vector.Dot(camera_normal) < 0.0){
 		return;
 	}
+  light.x = light.x/light.Norm();
+  light.y = light.y/light.Norm();
+  light.z = light.z/light.Norm();
 
   int min_x = std::min(std::min(screen_space_triangle.A.x, screen_space_triangle.B.x), screen_space_triangle.C.x);
   int max_x = std::max(std::max(screen_space_triangle.A.x, screen_space_triangle.B.x), screen_space_triangle.C.x);
@@ -170,7 +182,7 @@ void Canvas::DrawTriangle(Triangle* triangle){
     for(int j = min_x; j <= max_x; j++){
       position.x = j;
       if(CanDrawPixel(screen_space_triangle, position)){
-        screen[i][j] = DepthMap(i, j);
+        screen[i][j] = Lighting((*triangle), light);
       }
     }
   }
@@ -183,6 +195,7 @@ void Canvas::DrawObject(Object* object){
     render_triangle.A = triangle.A + object->GetOffset();
     render_triangle.B = triangle.B + object->GetOffset();
     render_triangle.C = triangle.C + object->GetOffset();
+    render_triangle.normal = triangle.normal;
     render_triangle.color_code = triangle.color_code;
 
     DrawTriangle(&render_triangle);
@@ -194,7 +207,7 @@ void Canvas::Print(){
   std::vector<std::string> lines;
   for(int i = 0; i < height; i++){
     for(int j = 0; j < width; j++){
-      line += "\033[38;5;" + std::to_string(screen[i][j]) + "m\u2588\033[0m";
+      line += "\033[38;5;" + std::to_string(screen[i][j]) + "m$\033[0m";
       screen[i][j] = 0;
       z_buffer[i][j] = 0.0;
     }

@@ -18,13 +18,7 @@ struct Triangle {
 class Object {
   public:
     std::vector<Triangle> tri;
-    std::vector<float> vert;
-    std::vector<float> texture;
-    std::vector<float> faceNormal;
-    std::vector<std::vector<int>> vertIndex;
-    std::vector<std::vector<int>> textureIndex;
-    std::vector<std::vector<int>> normIndex;
-
+    
     Object(std::string pathToFile);
 
     void RotateX(float angle);
@@ -37,6 +31,13 @@ class Object {
 
   private:
     Vec3 offset;
+    std::vector<float> vert;
+    std::vector<float> texture;
+    std::vector<float> faceNormal;
+    std::vector<std::vector<int>> vertIndex;
+    std::vector<std::vector<int>> textureIndex;
+    std::vector<std::vector<int>> normIndex;
+
 };
 
 // TODO: 
