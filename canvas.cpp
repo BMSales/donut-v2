@@ -207,7 +207,7 @@ void Canvas::Print(){
   std::vector<std::string> lines;
   for(int i = 0; i < height; i++){
     for(int j = 0; j < width; j++){
-      line += "\033[38;5;" + std::to_string(screen[i][j]) + "m$\033[0m";
+      line += "\033[38;5;" + std::to_string(screen[i][j]) + "m\u2588\033[0m";
       screen[i][j] = 0;
       z_buffer[i][j] = 0.0;
     }
