@@ -131,14 +131,16 @@ void Canvas::DrawTriangle(Triangle* triangle){
 	Triangle screen_space_triangle = ScreenSpacePerspectiveProjection(*triangle);
 	Vec3 position;
 
-	// Vec3 AB = triangle->B - triangle->A;
-	// Vec3 BC = triangle->C - triangle->B;
-	// Vec3 triangle_normal_vector = AB.Cross(BC);
-	// Vec3 camera_normal = {0.0, 0.0, 1.0};
-	//
-	// if(triangle_normal_vector.Dot(camera_normal) > 0.0){
-	// 	return;
-	// }
+	Vec3 AB = screen_space_triangle.B - screen_space_triangle.A;
+	Vec3 BC = screen_space_triangle.C - screen_space_triangle.B;
+  AB.z = 0.0;
+  BC.z = 0.0;
+	Vec3 triangle_normal_vector = AB.Cross(BC);
+	Vec3 camera_normal = {0.0, 0.0, 1.0};
+
+	if(triangle_normal_vector.Dot(camera_normal) < 0.0){
+		return;
+	}
 
   int min_x = std::min(std::min(screen_space_triangle.A.x, screen_space_triangle.B.x), screen_space_triangle.C.x);
   int max_x = std::max(std::max(screen_space_triangle.A.x, screen_space_triangle.B.x), screen_space_triangle.C.x);
