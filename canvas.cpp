@@ -1,7 +1,5 @@
 #include <ctime>
 #include <iostream>
-#include <math.h>
-#include <stdlib.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
@@ -52,11 +50,11 @@ float Canvas::SignedTriangleArea(Triangle triangle){
 	Vec2 vertex_C = {triangle.C.x, triangle.C.y};
 
   Vec2 vector_AB = vertex_B - vertex_A;
-  Vec2 vector_AP = vertex_C - vertex_A;
+  Vec2 vector_AC = vertex_C - vertex_A;
   Vec2 rotated_AB = {-vector_AB.y, vector_AB.x};
 
   float base = vector_AB.Norm();
-  float height = rotated_AB.Dot(vector_AP);
+  float height = rotated_AB.Dot(vector_AC);
 
   return base * height/2;
 }
