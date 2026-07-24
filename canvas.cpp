@@ -186,11 +186,11 @@ void Canvas::DrawTriangle(Triangle* triangle){
   }
 }
 
-void Canvas::DrawObject(Object* object){
+void Canvas::DrawObject(Object* object, Matrix transform){
   Triangle render_triangle;
 
   for(auto &triangle : (*object).tri){
-    render_triangle.A = triangle.A + object->GetOffset();
+    render_triangle.A = triangle.A;
     render_triangle.B = triangle.B + object->GetOffset();
     render_triangle.C = triangle.C + object->GetOffset();
     render_triangle.normal = triangle.normal;

@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include "canvas.hpp"
+#include "linear-algebra.hpp"
 #include "object.hpp"
 #include "vectors.hpp"
 
@@ -17,13 +18,14 @@ int main(int argc, char* argv[]){
 		pathToObject = argv[1];
 	}
 
-	float fov = 45;
+	float fov = 25;
 	float z = 3.5;
   float angle_1 = 1.2;
   float angle_2 = 1.5;
   float angle_3 = 1.3;
 
   Canvas canvas = Canvas();
+	Matrix transform = Matrix();
   Object object = Object(pathToObject);
 	canvas.SetFOV(fov);
   object.SetOffset({0.0, 0.0, z});

@@ -86,6 +86,7 @@ Object::Object(std::string pathToFile){
   }
 
   int firstVertex;
+	float normHelper = 0.0;
   if(vertIndex[0][0] < 0){
     firstVertex = - vert.size() / 3;
   }
@@ -94,41 +95,51 @@ Object::Object(std::string pathToFile){
   }
 
   for(auto [vertex, texture, normal] : std::views::zip(vertIndex, textureIndex, normIndex)){
-    objTriangle.A.x = vert[(vertex[0] - firstVertex) * 3];
-    objTriangle.A.y = vert[(vertex[0] - firstVertex) * 3 + 1];
-    objTriangle.A.z = vert[(vertex[0] - firstVertex) * 3 + 2];
+		objTriangle.A = {vert[(vertex[0] - firstVertex) * 3], vert[(vertex[0] - firstVertex) * 3 + 1], vert[(vertex[0] - firstVertex) * 3 + 2], 1};
+		objTriangle.B = {vert[(vertex[1] - firstVertex) * 3], vert[(vertex[1] - firstVertex) * 3 + 1], vert[(vertex[1] - firstVertex) * 3 + 2], 1};
+		objTriangle.C = {vert[(vertex[2] - firstVertex) * 3], vert[(vertex[2] - firstVertex) * 3 + 1], vert[(vertex[2] - firstVertex) * 3 + 2], 1};
+    // objTriangle.A.x = vert[(vertex[0] - firstVertex) * 3];
+    // objTriangle.A.y = vert[(vertex[0] - firstVertex) * 3 + 1];
+    // objTriangle.A.z = vert[(vertex[0] - firstVertex) * 3 + 2];
 
-    objTriangle.B.x = vert[(vertex[1] - firstVertex) * 3];
-    objTriangle.B.y = vert[(vertex[1] - firstVertex) * 3 + 1];
-    objTriangle.B.z = vert[(vertex[1] - firstVertex) * 3 + 2];
+    // objTriangle.B.x = vert[(vertex[1] - firstVertex) * 3];
+    // objTriangle.B.y = vert[(vertex[1] - firstVertex) * 3 + 1];
+    // objTriangle.B.z = vert[(vertex[1] - firstVertex) * 3 + 2];
+    //
+    // objTriangle.C.x = vert[(vertex[2] - firstVertex) * 3];
+    // objTriangle.C.y = vert[(vertex[2] - firstVertex) * 3 + 1];
+    // objTriangle.C.z = vert[(vertex[2] - firstVertex) * 3 + 2];
 
-    objTriangle.C.x = vert[(vertex[2] - firstVertex) * 3];
-    objTriangle.C.y = vert[(vertex[2] - firstVertex) * 3 + 1];
-    objTriangle.C.z = vert[(vertex[2] - firstVertex) * 3 + 2];
+		objTriangle.normal = {faceNormal[(normal[0] - firstVertex) * 3], faceNormal[(normal[0] - firstVertex) * 3 + 1], faceNormal[(normal[0] - firstVertex) * 3 + 2]};
+    // objTriangle.normal.x = faceNormal[(normal[0] - firstVertex) * 3];
+    // objTriangle.normal.y = faceNormal[(normal[0] - firstVertex) * 3 + 1];
+    // objTriangle.normal.z = faceNormal[(normal[0] - firstVertex) * 3 + 2];
 
-    objTriangle.normal.x = faceNormal[(normal[0] - firstVertex) * 3];
-    objTriangle.normal.y = faceNormal[(normal[0] - firstVertex) * 3 + 1];
-    objTriangle.normal.z = faceNormal[(normal[0] - firstVertex) * 3 + 2];
-
-    objTriangle.normal.x = objTriangle.normal.x / objTriangle.normal.Norm();
-    objTriangle.normal.y = objTriangle.normal.y / objTriangle.normal.Norm();
-    objTriangle.normal.z = objTriangle.normal.z / objTriangle.normal.Norm();
+		normHelper = objTriangle.normal.Norm();
+		objTriangle.normal = {objTriangle.normal.coord[0]/normHelper, objTriangle.normal.coord[1]/normHelper, objTriangle.normal.coord[2]/normHelper}
+    // objTriangle.normal.x = objTriangle.normal.x / objTriangle.normal.Norm();
+    // objTriangle.normal.y = objTriangle.normal.y / objTriangle.normal.Norm();
+    // objTriangle.normal.z = objTriangle.normal.z / objTriangle.normal.Norm();
     
     tri.push_back(objTriangle);
     if(vertex.size() > 3){
       for(int i = 3; i < vertex.size(); i++){
         objTriangle.B = objTriangle.C;
-        objTriangle.C.x = vert[(vertex[i] - firstVertex) * 3];
-        objTriangle.C.y = vert[(vertex[i] - firstVertex) * 3 + 1];
-        objTriangle.C.z = vert[(vertex[i] - firstVertex) * 3 + 2];
+				objTriangle.C = {vert[(vertex[i] - firstVertex) * 3], vert[(vertex[i] - firstVertex) * 3 + 1], vert[(vertex[i] - firstVertex) * 3 + 2], 1};
+        // objTriangle.C.x = vert[(vertex[i] - firstVertex) * 3];
+        // objTriangle.C.y = vert[(vertex[i] - firstVertex) * 3 + 1];
+        // objTriangle.C.z = vert[(vertex[i] - firstVertex) * 3 + 2];
 
-        objTriangle.normal.x = faceNormal[(normal[i] - firstVertex) * 3];
-        objTriangle.normal.y = faceNormal[(normal[i] - firstVertex) * 3 + 1];
-        objTriangle.normal.z = faceNormal[(normal[i] - firstVertex) * 3 + 2];
+				objTriangle.normal = {faceNormal[(normal[i] - firstVertex) * 3], faceNormal[(normal[i] - firstVertex) * 3 + 1], faceNormal[(normal[i] - firstVertex) * 3 + 2]};
+        // objTriangle.normal.x = faceNormal[(normal[i] - firstVertex) * 3];
+        // objTriangle.normal.y = faceNormal[(normal[i] - firstVertex) * 3 + 1];
+        // objTriangle.normal.z = faceNormal[(normal[i] - firstVertex) * 3 + 2];
 
-        objTriangle.normal.x = objTriangle.normal.x / objTriangle.normal.Norm();
-        objTriangle.normal.y = objTriangle.normal.y / objTriangle.normal.Norm();
-        objTriangle.normal.z = objTriangle.normal.z / objTriangle.normal.Norm();
+				normHelper = objTriangle.normal.Norm();
+				objTriangle.normal = {objTriangle.normal.coord[0]/normHelper, objTriangle.normal.coord[1]/normHelper, objTriangle.normal.coord[2]/normHelper}
+        // objTriangle.normal.x = objTriangle.normal.x / objTriangle.normal.Norm();
+        // objTriangle.normal.y = objTriangle.normal.y / objTriangle.normal.Norm();
+        // objTriangle.normal.z = objTriangle.normal.z / objTriangle.normal.Norm();
 
         tri.push_back(objTriangle);
       }
@@ -143,79 +154,5 @@ void Object::SetRandomColors(){
 
   for(auto &triangle : tri){
     triangle.color_code = uniform_dist(engine);
-  }
-}
-
-void Object::SetOffset(Vec3 offset){
-  this->offset = offset;
-}
-
-Vec3 Object::GetOffset(){
-  return offset;
-}
-
-void Object::RotateX(float angle){
-  float rad = angle * M_PI/180.0;
-  float cos_rad = cos(rad);
-  float sin_rad = sin(rad);
-  Triangle helper_triangle;
-
-  for(auto &triangle : tri){
-    helper_triangle = triangle;
-
-    triangle.A.y = helper_triangle.A.y * cos_rad + helper_triangle.A.z * -sin_rad;
-    triangle.B.y = helper_triangle.B.y * cos_rad + helper_triangle.B.z * -sin_rad;
-    triangle.C.y = helper_triangle.C.y * cos_rad + helper_triangle.C.z * -sin_rad;
-
-    triangle.A.z = helper_triangle.A.y * sin_rad + helper_triangle.A.z * cos_rad;
-    triangle.B.z = helper_triangle.B.y * sin_rad + helper_triangle.B.z * cos_rad;
-    triangle.C.z = helper_triangle.C.y * sin_rad + helper_triangle.C.z * cos_rad;
-
-    triangle.normal.y = helper_triangle.normal.y * cos_rad + helper_triangle.normal.z * -sin_rad;
-    triangle.normal.z = helper_triangle.normal.y * sin_rad + helper_triangle.normal.z * cos_rad;
-  }
-}
-
-void Object::RotateY(float angle){
-  float rad = angle * M_PI/180.0;
-  float cos_rad = cos(rad);
-  float sin_rad = sin(rad);
-  Triangle helper_triangle;
-
-  for(auto &triangle : tri){
-    helper_triangle = triangle;
-
-    triangle.A.x = helper_triangle.A.x * cos_rad + helper_triangle.A.z * -sin_rad;
-    triangle.B.x = helper_triangle.B.x * cos_rad + helper_triangle.B.z * -sin_rad;
-    triangle.C.x = helper_triangle.C.x * cos_rad + helper_triangle.C.z * -sin_rad;
-
-    triangle.A.z = helper_triangle.A.x * sin_rad + helper_triangle.A.z * cos_rad;
-    triangle.B.z = helper_triangle.B.x * sin_rad + helper_triangle.B.z * cos_rad;
-    triangle.C.z = helper_triangle.C.x * sin_rad + helper_triangle.C.z * cos_rad;
-
-    triangle.normal.x = helper_triangle.normal.x * cos_rad + helper_triangle.normal.z * -sin_rad;
-    triangle.normal.z = helper_triangle.normal.x * sin_rad + helper_triangle.normal.z * cos_rad;
-  }
-}
-
-void Object::RotateZ(float angle){
-  float rad = angle * M_PI/180.0;
-  float cos_rad = cos(rad);
-  float sin_rad = sin(rad);
-  Triangle helper_triangle;
-
-  for(auto &triangle : tri){
-    helper_triangle = triangle;
-
-    triangle.A.x = helper_triangle.A.x * cos_rad + helper_triangle.A.y * -sin_rad;
-    triangle.B.x = helper_triangle.B.x * cos_rad + helper_triangle.B.y * -sin_rad;
-    triangle.C.x = helper_triangle.C.x * cos_rad + helper_triangle.C.y * -sin_rad;
-
-    triangle.A.y = helper_triangle.A.x * sin_rad + helper_triangle.A.y * cos_rad;
-    triangle.B.y = helper_triangle.B.x * sin_rad + helper_triangle.B.y * cos_rad;
-    triangle.C.y = helper_triangle.C.x * sin_rad + helper_triangle.C.y * cos_rad;
-
-    triangle.normal.x = helper_triangle.normal.x * cos_rad + helper_triangle.normal.y * -sin_rad;
-    triangle.normal.y = helper_triangle.normal.x * sin_rad + helper_triangle.normal.y * cos_rad;
   }
 }
