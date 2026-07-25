@@ -11,7 +11,7 @@ struct Triangle {
 	Vec4 A;
 	Vec4 B;
 	Vec4 C;
-	Vec3 normal;
+	Vec4 normal;
 	int color_code;
 };
 

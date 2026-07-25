@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include "canvas.hpp"
+#include "linear-algebra.hpp"
 #include "object.hpp"
 #include "vectors.hpp"
 
@@ -21,7 +22,6 @@ Canvas::Canvas(){
 
   fov = 45.0;
   aspect_ratio = (float)width/(float)height;
-  transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
 
   screen.resize(height);
   z_buffer.resize(height);
@@ -41,17 +41,16 @@ void Canvas::SetFOV(float new_fov){
   }
 
   fov = new_fov;
-  transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
 }
 
 float Canvas::SignedTriangleArea(Triangle triangle){
-	Vec2 vertex_A = {triangle.A.x, triangle.A.y};
-	Vec2 vertex_B = {triangle.B.x, triangle.B.y};
-	Vec2 vertex_C = {triangle.C.x, triangle.C.y};
+	Vec2 vertex_A = {triangle.A.coord[0], triangle.A.coord[1]};
+	Vec2 vertex_B = {triangle.B.coord[0], triangle.B.coord[1]};
+	Vec2 vertex_C = {triangle.C.coord[0], triangle.C.coord[1]};
 
   Vec2 vector_AB = vertex_B - vertex_A;
   Vec2 vector_AC = vertex_C - vertex_A;
-  Vec2 rotated_AB = {-vector_AB.y, vector_AB.x};
+  Vec2 rotated_AB = {-vector_AB.coord[1], vector_AB.coord[0]};
 
   float base = vector_AB.Norm();
   float height = rotated_AB.Dot(vector_AC);
@@ -59,10 +58,10 @@ float Canvas::SignedTriangleArea(Triangle triangle){
   return base * height/2;
 }
 
-bool Canvas::CanDrawPixel(Triangle screen_space_triangle, Vec3 position){
-  Triangle triangle_A = {screen_space_triangle.B, screen_space_triangle.C, position};
-  Triangle triangle_B = {screen_space_triangle.C, screen_space_triangle.A, position};
-  Triangle triangle_C = {screen_space_triangle.A, screen_space_triangle.B, position};
+bool Canvas::CanDrawPixel(Triangle triangle, Vec3 position){
+  Triangle triangle_A = {triangle.B, triangle.C, position};
+  Triangle triangle_B = {triangle.C, triangle.A, position};
+  Triangle triangle_C = {triangle.A, triangle.B, position};
 
   float area_A = SignedTriangleArea(triangle_A);
   float area_B = SignedTriangleArea(triangle_B);
@@ -71,40 +70,16 @@ bool Canvas::CanDrawPixel(Triangle screen_space_triangle, Vec3 position){
   float one_over_z = 0.0;
 
   if(area_A >= 0 && area_B >= 0 && area_C >= 0){
-		z_position = (screen_space_triangle.A.z * area_A + screen_space_triangle.B.z * area_B + screen_space_triangle.C.z * area_C)/(area_A + area_B + area_C);
+		z_position = (triangle.A.coord[2] * area_A + triangle.B.coord[2] * area_B + triangle.C.coord[2] * area_C)/(area_A + area_B + area_C);
 		one_over_z = 1/z_position;
 		
-    if(one_over_z > z_buffer[position.y][position.x]){
-      z_buffer[position.y][position.x] = one_over_z;
+    if(one_over_z > z_buffer[position.coord[1]][position.coord[0]]){
+      z_buffer[position.coord[1]][position.coord[0]] = one_over_z;
       return true;
     }
   }
 
   return false;
-}
-
-Triangle Canvas::ScreenSpacePerspectiveProjection(Triangle triangle){
-  Triangle screen_space_triangle;
-
-  screen_space_triangle.A.x = triangle.A.x * transform/(aspect_ratio * triangle.A.z);
-  screen_space_triangle.A.y = triangle.A.y * transform/triangle.A.z;
-	screen_space_triangle.B.x = triangle.B.x * transform/(aspect_ratio * triangle.B.z);
-  screen_space_triangle.B.y = triangle.B.y * transform/triangle.B.z;
-	screen_space_triangle.C.x = triangle.C.x * transform/(aspect_ratio * triangle.C.z);
-  screen_space_triangle.C.y = triangle.C.y * transform/triangle.C.z;
-
-  screen_space_triangle.A.x = ((screen_space_triangle.A.x + 1.0)/2.0) * width;
-  screen_space_triangle.A.y = ((-screen_space_triangle.A.y + 1.0)/2.0) * height;
-	screen_space_triangle.B.x = ((screen_space_triangle.B.x + 1.0)/2.0) * width;
-  screen_space_triangle.B.y = ((-screen_space_triangle.B.y + 1.0)/2.0) * height;
-	screen_space_triangle.C.x = ((screen_space_triangle.C.x + 1.0)/2.0) * width;
-  screen_space_triangle.C.y = ((-screen_space_triangle.C.y + 1.0)/2.0) * height;
-
-	screen_space_triangle.A.z = triangle.A.z;
-	screen_space_triangle.B.z = triangle.B.z;
-	screen_space_triangle.C.z = triangle.C.z;
-
-  return screen_space_triangle;
 }
 
 bool Canvas::AABB_Collision(int min_x, int max_x, int min_y, int max_y){
@@ -134,28 +109,31 @@ int Canvas::Lighting(Triangle triangle, Vec3 light){
 }
 
 void Canvas::DrawTriangle(Triangle* triangle){
-	Triangle screen_space_triangle = ScreenSpacePerspectiveProjection(*triangle);
   Vec3 light = {0.0, -1.0, 1.0};
 	Vec3 position;
 
-	Vec3 AB = screen_space_triangle.B - screen_space_triangle.A;
-	Vec3 BC = screen_space_triangle.C - screen_space_triangle.B;
-  AB.z = 0.0;
-  BC.z = 0.0;
-	Vec3 triangle_normal_vector = AB.Cross(BC);
+	Vec4 AB = triangle.B - triangle.A;
+	Vec4 BC = triangle.C - triangle.B;
+	Vec3 AB_v3 = {AB.coord[0], AB.coord[1], AB.coord[2]};
+	Vec3 BC_v3 = {BC.coord[0], BC.coord[1], BC.coord[2]};
+
+  AB_v3.coord[2] = 0.0;
+  BC_v3.coord[2] = 0.0;
+
+	Vec3 triangle_normal_vector = AB_v3.Cross(BC_v3);
 	Vec3 camera_normal = {0.0, 0.0, 1.0};
 
 	if(triangle_normal_vector.Dot(camera_normal) < 0.0){
 		return;
 	}
-  light.x = light.x/light.Norm();
-  light.y = light.y/light.Norm();
-  light.z = light.z/light.Norm();
+  light.coord[0] = light.coord[0]/light.Norm();
+  light.coord[1] = light.coord[1]/light.Norm();
+  light.coord[2] = light.coord[2]/light.Norm();
 
-  int min_x = std::min(std::min(screen_space_triangle.A.x, screen_space_triangle.B.x), screen_space_triangle.C.x);
-  int max_x = std::max(std::max(screen_space_triangle.A.x, screen_space_triangle.B.x), screen_space_triangle.C.x);
-  int min_y = std::min(std::min(screen_space_triangle.A.y, screen_space_triangle.B.y), screen_space_triangle.C.y);
-  int max_y = std::max(std::max(screen_space_triangle.A.y, screen_space_triangle.B.y), screen_space_triangle.C.y);
+  int min_x = std::min(std::min(triangle.A.coord[0], triangle.B.coord[0]), triangle.C.coord[0]);
+  int max_x = std::max(std::max(triangle.A.coord[0], triangle.B.coord[0]), triangle.C.coord[0]);
+  int min_y = std::min(std::min(triangle.A.coord[1], triangle.B.coord[1]), triangle.C.coord[1]);
+  int max_y = std::max(std::max(triangle.A.coord[1], triangle.B.coord[1]), triangle.C.coord[1]);
 
   if(!AABB_Collision(min_x, max_x, min_y, max_y)){
     return;
@@ -176,10 +154,10 @@ void Canvas::DrawTriangle(Triangle* triangle){
   }
 
   for(int i = min_y; i <= max_y; i++){
-    position.y = i;
+    position.coord[1] = i;
     for(int j = min_x; j <= max_x; j++){
-      position.x = j;
-      if(CanDrawPixel(screen_space_triangle, position)){
+      position.coord[0] = j;
+      if(CanDrawPixel(triangle, position)){
         screen[i][j] = Lighting((*triangle), light);
       }
     }
@@ -190,10 +168,10 @@ void Canvas::DrawObject(Object* object, Matrix transform){
   Triangle render_triangle;
 
   for(auto &triangle : (*object).tri){
-    render_triangle.A = triangle.A;
-    render_triangle.B = triangle.B + object->GetOffset();
-    render_triangle.C = triangle.C + object->GetOffset();
-    render_triangle.normal = triangle.normal;
+    render_triangle.A = transform.Multiply(triangle.A);
+    render_triangle.B = transform.Multiply(triangle.B);
+    render_triangle.C = transform.Multiply(triangle.C);
+    render_triangle.normal = transform.Multiply(triangle.normal);
     render_triangle.color_code = triangle.color_code;
 
     DrawTriangle(&render_triangle);

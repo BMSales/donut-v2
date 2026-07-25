@@ -168,3 +168,22 @@ Matrix Matrix::Multiply(Matrix input){
 
 	return product;
 }
+
+Vec4 Matrix::Multiply(Vec4 input){
+	if(this->rows != 4){
+		std::cout << "Cannot multiply vector with this matrix!" << std::endl;
+		exit(-1);
+	}
+	float helper;
+	Vec4 product;
+
+	for(int i = 0; i < 4; i++){
+		for(int j = 0; j < 4; j++){
+			helper += input.coord[j] * this->values[j][i];
+		}
+		product.coord[i] = helper;
+		helper = 0;
+	}
+
+	return product;
+}

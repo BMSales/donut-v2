@@ -24,7 +24,6 @@ class Canvas {
 
     float fov;
     float aspect_ratio;
-    float transform;
 
     bool CanDrawPixel(Triangle screen_space_triangle, Vec3 position);
     bool AABB_Collision(int min_x, int max_x, int min_y, int max_y);
@@ -33,6 +32,5 @@ class Canvas {
     int Lighting(Triangle triangle, Vec3 light);
 
     float SignedTriangleArea(Triangle triangle);
-    Triangle ScreenSpacePerspectiveProjection(Triangle triangle);
     void DrawTriangle(Triangle* triangle);
 };

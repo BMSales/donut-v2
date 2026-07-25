@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include "vectors.hpp"
 
 class Matrix{
 public:
@@ -22,7 +23,8 @@ public:
 	void PerspectiveProjection(float fov, float aspect_ratio, float far, float near);
 
 	void Print();
-	Matrix Multiply(Matrix rhs);
+	Matrix Multiply(Matrix input);
+	Vec4 Multiply(Vec4 input);
 
 private:
 	int rows;
