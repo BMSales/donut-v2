@@ -34,6 +34,25 @@ Canvas::Canvas(){
   }
 }
 
+int Canvas::GetHeight(){
+	return height;
+}
+
+int Canvas::GetWidth(){
+	return width;
+}
+
+void Canvas::SetTranformations(Matrix translation, Matrix scaling, Matrix, Matrix rotationX, Matrix rotationY, Matrix rotationZ, Matrix projection){
+	Matrix product;
+	product = translation.Multiply(scaling);
+	product = product.Multiply(rotationX);
+	product = product.Multiply(rotationY);
+	product = product.Multiply(rotationZ);
+	product = product.Multiply(projection);
+
+	transformations = {translation, scaling, rotationX, rotationY, rotationZ, projection, product};
+}
+
 void Canvas::SetFOV(float new_fov){
   if(new_fov <= 0.0 || new_fov >= 180.0){
     std::cout << "invalid angle" << std::endl;
@@ -164,14 +183,14 @@ void Canvas::DrawTriangle(Triangle* triangle){
   }
 }
 
-void Canvas::DrawObject(Object* object, Matrix transform){
+void Canvas::DrawObject(Object* object){
   Triangle render_triangle;
 
   for(auto &triangle : (*object).tri){
-    render_triangle.A = transform.Multiply(triangle.A);
-    render_triangle.B = transform.Multiply(triangle.B);
-    render_triangle.C = transform.Multiply(triangle.C);
-    render_triangle.normal = transform.Multiply(triangle.normal);
+    render_triangle.A = transformations[6].Multiply(triangle.A);
+    render_triangle.B = transformations[6].Multiply(triangle.B);
+    render_triangle.C = transformations[6].Multiply(triangle.C);
+    render_triangle.normal = transformations[6].Multiply(triangle.normal);
     render_triangle.color_code = triangle.color_code;
 
     DrawTriangle(&render_triangle);

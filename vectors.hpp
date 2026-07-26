@@ -1,14 +1,13 @@
 #pragma once
 
 #include <cmath>
-#include <vector>
 
 typedef struct Vec2 Vec2;
 typedef struct Vec3 Vec3;
 typedef struct Vec4 Vec4;
 
 struct Vec2 {
-	std::vector<float> coord[2];
+	float coord[2];
 
   float Norm(){
     return std::sqrt(std::pow(coord[0], 2) + std::pow(coord[1], 2));
@@ -34,7 +33,7 @@ struct Vec2 {
 };
 
 struct Vec3 {
-	std::vector<float> coord[3];
+	float coord[3];
 
   float Norm(){
     return std::sqrt(std::pow(coord[0], 2) + std::pow(coord[1], 2) + std::pow(coord[2], 2));
@@ -71,7 +70,7 @@ struct Vec3 {
 };
 
 struct Vec4 {
-	std::vector<float> coord[4];
+	float coord[4];
 
   float Norm(){
     return std::sqrt(std::pow(coord[0], 2) + std::pow(coord[1], 2) + std::pow(coord[2], 2) + std::pow(coord[3], 2));

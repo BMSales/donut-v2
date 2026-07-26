@@ -10,33 +10,43 @@
 
 int main(int argc, char* argv[]){
 	std::string pathToObject;
-  if(argc < 2){
-    std::cout << "Must inform path to object" << std::endl;
-    return 1;
-  }
+	if(argc < 2){
+		std::cout << "Must inform path to object" << std::endl;
+		return 1;
+	}
 	else {
 		pathToObject = argv[1];
 	}
 
-	float fov = 25;
-	float z = 3.5;
-  float angle_1 = 1.2;
-  float angle_2 = 1.5;
-  float angle_3 = 1.3;
+	Canvas canvas = Canvas();
+	Object object = Object(pathToObject);
+	float angle = 0.0;
 
-  Canvas canvas = Canvas();
-	Matrix transform = Matrix();
-  Object object = Object(pathToObject);
-	canvas.SetFOV(fov);
-  object.SetOffset({0.0, 0.0, z});
+	Matrix transformations[7];
+	Matrix translation = Matrix();
+	Matrix scaling = Matrix();
+	Matrix rotationX = Matrix();
+	Matrix rotationY = Matrix();
+	Matrix rotationZ = Matrix();
+	Matrix perspectiveProj = Matrix();
+	Matrix product = Matrix();
 
-  while(1){
-    canvas.DrawObject(&object);
-    canvas.Print();
-    usleep(16*1000);
-    canvas.ClearScreen();
-    object.RotateX(angle_1);
-    object.RotateY(angle_2);
-    object.RotateZ(angle_3);
-  }
+	translation.Translation(0, 0, 10);
+	scaling.Scaling(1, 1, 1);
+	rotationX.RotationX(0);
+	rotationY.RotationY(0);
+	rotationZ.RotationZ(0);
+	perspectiveProj.PerspectiveProjection(60, (float)canvas.GetWidth()/(float)canvas.GetHeight(), 1000, 0);
+
+	canvas.SetTransformations(translation, scaling, rotationX, rotationY, rotationZ, perspectiveProj);
+
+	while(1){
+		canvas.DrawObject(&object);
+		canvas.Print();
+		rotationX.RotationX(angle);
+		canvas.SetTransformations(translation, scaling, rotationX, rotationY, rotationZ, perspectiveProj);
+		usleep(16*1000);
+		canvas.ClearScreen();
+		angle = angle + 0.1;
+	}
 }
