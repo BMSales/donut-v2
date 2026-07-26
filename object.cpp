@@ -116,7 +116,7 @@ Object::Object(std::string pathToFile){
     // objTriangle.normal.z = faceNormal[(normal[0] - firstVertex) * 3 + 2];
 
 		normHelper = objTriangle.normal.Norm();
-		objTriangle.normal = {objTriangle.normal.coord[0]/normHelper, objTriangle.normal.coord[1]/normHelper, objTriangle.normal.coord[2]/normHelper, 1}
+		objTriangle.normal = {objTriangle.normal.coord[0]/normHelper, objTriangle.normal.coord[1]/normHelper, objTriangle.normal.coord[2]/normHelper, 1};
     // objTriangle.normal.x = objTriangle.normal.x / objTriangle.normal.Norm();
     // objTriangle.normal.y = objTriangle.normal.y / objTriangle.normal.Norm();
     // objTriangle.normal.z = objTriangle.normal.z / objTriangle.normal.Norm();
@@ -136,7 +136,7 @@ Object::Object(std::string pathToFile){
         // objTriangle.normal.z = faceNormal[(normal[i] - firstVertex) * 3 + 2];
 
 				normHelper = objTriangle.normal.Norm();
-				objTriangle.normal = {objTriangle.normal.coord[0]/normHelper, objTriangle.normal.coord[1]/normHelper, objTriangle.normal.coord[2]/normHelper, 1}
+				objTriangle.normal = {objTriangle.normal.coord[0]/normHelper, objTriangle.normal.coord[1]/normHelper, objTriangle.normal.coord[2]/normHelper, 1};
         // objTriangle.normal.x = objTriangle.normal.x / objTriangle.normal.Norm();
         // objTriangle.normal.y = objTriangle.normal.y / objTriangle.normal.Norm();
         // objTriangle.normal.z = objTriangle.normal.z / objTriangle.normal.Norm();

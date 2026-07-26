@@ -30,12 +30,12 @@ private:
 	float aspect_ratio;
 	Matrix transformations[7];
 
-	bool CanDrawPixel(Triangle, Vec3);
+	bool CanDrawPixel(Triangle, Vec4);
 	bool AABB_Collision(int, int, int, int);
 
 	int DepthMap(int, int);
-	int Lighting(Triangle, Vec3);
+	int Lighting(Triangle, Vec4);
 
 	float SignedTriangleArea(Triangle);
-	void DrawTriangle(Triangle*);
+	void DrawTriangle(Triangle);
 };

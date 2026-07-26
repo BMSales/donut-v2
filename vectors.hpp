@@ -98,11 +98,11 @@ struct Vec4 {
     coord[3] = _w;
   }
 
-  friend Vec4 operator+ (Vec3 lhs, const Vec3& rhs){
+  friend Vec4 operator+ (Vec4 lhs, const Vec4& rhs){
     return Vec4(lhs.coord[0] + rhs.coord[0], lhs.coord[1] + rhs.coord[1], lhs.coord[2] + rhs.coord[2], lhs.coord[3] + rhs.coord[3]);
   }
 
-  friend Vec4 operator- (Vec3 lhs, const Vec3& rhs){
+  friend Vec4 operator- (Vec4 lhs, const Vec4& rhs){
     return Vec4(lhs.coord[0] - rhs.coord[0], lhs.coord[1] - rhs.coord[1], lhs.coord[2] - rhs.coord[2], lhs.coord[3] + rhs.coord[3]);
   }
 };

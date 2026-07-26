@@ -42,7 +42,7 @@ int Canvas::GetWidth(){
 	return width;
 }
 
-void Canvas::SetTranformations(Matrix translation, Matrix scaling, Matrix, Matrix rotationX, Matrix rotationY, Matrix rotationZ, Matrix projection){
+void Canvas::SetTransformations(Matrix translation, Matrix scaling, Matrix rotationX, Matrix rotationY, Matrix rotationZ, Matrix projection){
 	Matrix product;
 	product = translation.Multiply(scaling);
 	product = product.Multiply(rotationX);
@@ -50,7 +50,13 @@ void Canvas::SetTranformations(Matrix translation, Matrix scaling, Matrix, Matri
 	product = product.Multiply(rotationZ);
 	product = product.Multiply(projection);
 
-	transformations = {translation, scaling, rotationX, rotationY, rotationZ, projection, product};
+	transformations[0] = translation;
+	transformations[1] = scaling;
+	transformations[2] = rotationX;
+	transformations[3] = rotationY;
+	transformations[4] = rotationZ;
+	transformations[5] = projection;
+	transformations[6] = product;
 }
 
 void Canvas::SetFOV(float new_fov){
@@ -77,7 +83,7 @@ float Canvas::SignedTriangleArea(Triangle triangle){
   return base * height/2;
 }
 
-bool Canvas::CanDrawPixel(Triangle triangle, Vec3 position){
+bool Canvas::CanDrawPixel(Triangle triangle, Vec4 position){
   Triangle triangle_A = {triangle.B, triangle.C, position};
   Triangle triangle_B = {triangle.C, triangle.A, position};
   Triangle triangle_C = {triangle.A, triangle.B, position};
@@ -119,7 +125,7 @@ int Canvas::DepthMap(int i, int j){
   }
 }
 
-int Canvas::Lighting(Triangle triangle, Vec3 light){
+int Canvas::Lighting(Triangle triangle, Vec4 light){
   float dot_product = triangle.normal.Dot(light);
   if(dot_product < 0.0){
     return bw_color_code[(int)(dot_product * -22)];
@@ -127,9 +133,10 @@ int Canvas::Lighting(Triangle triangle, Vec3 light){
   return 232;
 }
 
-void Canvas::DrawTriangle(Triangle* triangle){
+void Canvas::DrawTriangle(Triangle triangle){
   Vec3 light = {0.0, -1.0, 1.0};
-	Vec3 position;
+	Vec4 light_v4 = {light.coord[0], light.coord[1], light.coord[2], 1};
+	Vec4 position;
 
 	Vec4 AB = triangle.B - triangle.A;
 	Vec4 BC = triangle.C - triangle.B;
@@ -177,7 +184,7 @@ void Canvas::DrawTriangle(Triangle* triangle){
     for(int j = min_x; j <= max_x; j++){
       position.coord[0] = j;
       if(CanDrawPixel(triangle, position)){
-        screen[i][j] = Lighting((*triangle), light);
+        screen[i][j] = Lighting(triangle, light_v4);
       }
     }
   }
@@ -193,7 +200,7 @@ void Canvas::DrawObject(Object* object){
     render_triangle.normal = transformations[6].Multiply(triangle.normal);
     render_triangle.color_code = triangle.color_code;
 
-    DrawTriangle(&render_triangle);
+    DrawTriangle(render_triangle);
   }
 }
 
