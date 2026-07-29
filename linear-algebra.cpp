@@ -71,7 +71,7 @@ void Matrix::Identity(int size){
 		this->values[i].resize(size);
 	}
 	for(int i = 0; i < size; i++){
-		this->values[i][i] = 1;
+		this->values[i][i] = 1.0;
 	}
 }
 
@@ -127,13 +127,21 @@ void Matrix::RotationZ(float angle){
 
 void Matrix::PerspectiveProjection(float fov, float aspect_ratio, float far, float near){
 	float fov_rad = fov * RAD_CONV;
-	float arctan = atanf(fov_rad/2);
+	float arctan = 1.0/tanf(fov_rad/2.0);
 	this->Resize(4, 4);
-	this->values[0][0] = arctan * aspect_ratio;
+	this->values[0][0] = arctan / aspect_ratio;
 	this->values[1][1] = arctan;
-	this->values[2][2] = far/(far - near);
-	this->values[2][3] = 1;
-	this->values[3][2] = -far*near/(far - near);
+	this->values[2][2] = (- near - far)/(near - far);
+	this->values[2][3] = 1.0;
+	this->values[3][2] = (2*far*near)/(near - far);
+}
+
+void Matrix::ScreenSpace(int width, int height){
+	this->Identity(4);
+	this->values[0][0] = 0.5 * (float)width;
+	this->values[1][1] = -0.5 * (float)height;
+	this->values[3][0] = 0.5 * (float)width;
+	this->values[3][1] = 0.5 * (float)height;
 }
 
 void Matrix::Print(){
@@ -144,14 +152,6 @@ void Matrix::Print(){
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
-}
-
-void Matrix::ScreenSpace(int width, int height){
-	this->Identity(4);
-	this->values[0][0] = 0.5 * (float)width;
-	this->values[1][1] = -0.5 * (float)height;
-	this->values[3][0] = 0.5 * (float)width;
-	this->values[3][1] = 0.5 * (float)height;
 }
 
 Matrix Matrix::Multiply(Matrix input){

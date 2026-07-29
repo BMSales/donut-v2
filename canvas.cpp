@@ -42,38 +42,23 @@ int Canvas::GetWidth(){
 	return width;
 }
 
-void Canvas::SetTransformations(Matrix translation, Matrix scaling, Matrix rotationX, Matrix rotationY, Matrix rotationZ, Matrix projection, Matrix screen){
+void Canvas::SetTransformations(Matrix translation, Matrix scaling, Matrix rotationX, Matrix rotationY, Matrix rotationZ, Matrix projection, Matrix screenSpace){
 	Matrix product;
-	Vec4 test = {1, 1, 5, 1};
-	product = translation.Multiply(scaling);
-	product = product.Multiply(rotationX);
-	product = product.Multiply(rotationY);
-	product = product.Multiply(rotationZ);
-	product = product.Multiply(projection);
+  Matrix rotations;
 
-	// translation.Print();
-	// scaling.Print();
-	// rotationX.Print();
-	// rotationY.Print();
-	// rotationZ.Print();
-	// projection.Print();
-	// product.Print();
-	// test = product.Multiply(test);
-	// std::cout << test.coord[0] << std::endl;
-	// std::cout << test.coord[1] << std::endl;
-	// std::cout << test.coord[2] << std::endl;
-	// std::cout << test.coord[3] << std::endl;
-	// screen.Print();
-	// exit(-1);
+  rotations = rotationX.Multiply(rotationY);
+  rotations = rotations.Multiply(rotationZ);
+
+  product = rotations.Multiply(translation);
+	product = product.Multiply(scaling);
+	product = product.Multiply(projection);
 
 	transformations[0] = translation;
 	transformations[1] = scaling;
-	transformations[2] = rotationX;
-	transformations[3] = rotationY;
-	transformations[4] = rotationZ;
-	transformations[5] = projection;
-	transformations[6] = screen;
-	transformations[7] = product;
+	transformations[2] = rotations;
+	transformations[3] = projection;
+	transformations[4] = screenSpace;
+	transformations[5] = product;
 }
 
 void Canvas::SetFOV(float new_fov){
@@ -97,7 +82,7 @@ float Canvas::SignedTriangleArea(Triangle triangle){
 	float base = vector_AB.Norm();
 	float height = rotated_AB.Dot(vector_AC);
 
-	return base * height/2;
+	return base * height/2.0;
 }
 
 bool Canvas::CanDrawPixel(Triangle triangle, Vec4 position){
@@ -112,7 +97,7 @@ bool Canvas::CanDrawPixel(Triangle triangle, Vec4 position){
 	float one_over_z = 0.0;
 
 	if(area_A >= 0 && area_B >= 0 && area_C >= 0){
-		z_position = (triangle.A.coord[2] * area_A + triangle.B.coord[2] * area_B + triangle.C.coord[2] * area_C)/(area_A + area_B + area_C);
+		z_position = (triangle.A.coord[3] * area_A + triangle.B.coord[3] * area_B + triangle.C.coord[3] * area_C)/(area_A + area_B + area_C);
 		one_over_z = 1/z_position;
 
 		if(one_over_z > z_buffer[position.coord[1]][position.coord[0]]){
@@ -202,33 +187,94 @@ void Canvas::DrawTriangle(Triangle triangle){
 			position.coord[0] = j;
 			if(CanDrawPixel(triangle, position)){
 				screen[i][j] = Lighting(triangle, light);
+				// screen[i][j] = triangle.color_code;
 			}
 		}
 	}
 }
 
 void Canvas::DrawObject(Object* object){
-	Triangle render_triangle;
+  Triangle render_triangle;
 	float w1, w2, w3;
 
 	for(auto &triangle : (*object).tri){
-		render_triangle.A = transformations[7].Multiply(triangle.A);
-		render_triangle.B = transformations[7].Multiply(triangle.B);
-		render_triangle.C = transformations[7].Multiply(triangle.C);
-		render_triangle.normal = transformations[7].Multiply(triangle.normal);
+    //triangle get transformed by the combination of all transformations
+		render_triangle.A = transformations[5].Multiply(triangle.A);
+		render_triangle.B = transformations[5].Multiply(triangle.B);
+		render_triangle.C = transformations[5].Multiply(triangle.C);
+
+    //triangle normal gets rotated
+		render_triangle.normal = transformations[2].Multiply(triangle.normal);
+
+    //vertices get normalized after transformations
 		w1 = render_triangle.A.coord[3];
 		w2 = render_triangle.B.coord[3];
 		w3 = render_triangle.C.coord[3];
-		render_triangle.A = {render_triangle.A.coord[0]/w1, render_triangle.A.coord[1]/w1, render_triangle.A.coord[2]/w1, w1}; 
-		render_triangle.B = {render_triangle.B.coord[0]/w2, render_triangle.B.coord[1]/w2, render_triangle.B.coord[2]/w2, w2}; 
-		render_triangle.C = {render_triangle.C.coord[0]/w3, render_triangle.C.coord[1]/w3, render_triangle.C.coord[2]/w3, w3}; 
-		render_triangle.A = transformations[6].Multiply(render_triangle.A);
-		render_triangle.B = transformations[6].Multiply(render_triangle.B);
-		render_triangle.C = transformations[6].Multiply(render_triangle.C);
+		render_triangle.A = {render_triangle.A.coord[0]/w1, render_triangle.A.coord[1]/w1, render_triangle.A.coord[2]/w1, 1};
+		render_triangle.B = {render_triangle.B.coord[0]/w2, render_triangle.B.coord[1]/w2, render_triangle.B.coord[2]/w2, 1};
+		render_triangle.C = {render_triangle.C.coord[0]/w3, render_triangle.C.coord[1]/w3, render_triangle.C.coord[2]/w3, 1};
+
+    // triangle gets transformed into screen space
+		render_triangle.A = transformations[4].Multiply(render_triangle.A);
+		render_triangle.B = transformations[4].Multiply(render_triangle.B);
+		render_triangle.C = transformations[4].Multiply(render_triangle.C);
+
+		render_triangle.A = {render_triangle.A.coord[0], render_triangle.A.coord[1], render_triangle.A.coord[2], w1};
+		render_triangle.B = {render_triangle.B.coord[0], render_triangle.B.coord[1], render_triangle.B.coord[2], w2};
+		render_triangle.C = {render_triangle.C.coord[0], render_triangle.C.coord[1], render_triangle.C.coord[2], w3};
 
 		render_triangle.color_code = triangle.color_code;
 
 		DrawTriangle(render_triangle);
+
+    render_triangle.A = {0, 0, 0, 0};
+    render_triangle.B = {0, 0, 0, 0};
+    render_triangle.C = {0, 0, 0, 0};
+    render_triangle.normal = {0, 0, 0, 0};
+    render_triangle.color_code = 0;
+
+    // std::cout << "triangle A" << std::endl;
+    // std::cout << triangle.A.coord[0] << std::endl;
+    // std::cout << triangle.A.coord[1] << std::endl;
+    // std::cout << triangle.A.coord[2] << std::endl;
+    // std::cout << triangle.A.coord[3] << std::endl;
+    // std::cout << std::endl;
+    //
+    // std::cout << "triangle B" << std::endl;
+    // std::cout << triangle.B.coord[0] << std::endl;
+    // std::cout << triangle.B.coord[1] << std::endl;
+    // std::cout << triangle.B.coord[2] << std::endl;
+    // std::cout << triangle.B.coord[3] << std::endl;
+    // std::cout << std::endl;
+    //
+    // std::cout << "triangle C" << std::endl;
+    // std::cout << triangle.C.coord[0] << std::endl;
+    // std::cout << triangle.C.coord[1] << std::endl;
+    // std::cout << triangle.C.coord[2] << std::endl;
+    // std::cout << triangle.C.coord[3] << std::endl;
+    // std::cout << std::endl;
+    //
+    // std::cout << "render_triangle A" << std::endl;
+    // std::cout << render_triangle.A.coord[0] << std::endl;
+    // std::cout << render_triangle.A.coord[1] << std::endl;
+    // std::cout << render_triangle.A.coord[2] << std::endl;
+    // std::cout << render_triangle.A.coord[3] << std::endl;
+    // std::cout << std::endl;
+    //
+    // std::cout << "render_triangle B" << std::endl;
+    // std::cout << render_triangle.B.coord[0] << std::endl;
+    // std::cout << render_triangle.B.coord[1] << std::endl;
+    // std::cout << render_triangle.B.coord[2] << std::endl;
+    // std::cout << render_triangle.B.coord[3] << std::endl;
+    // std::cout << std::endl;
+    //
+    // std::cout << "render_triangle C" << std::endl;
+    // std::cout << render_triangle.C.coord[0] << std::endl;
+    // std::cout << render_triangle.C.coord[1] << std::endl;
+    // std::cout << render_triangle.C.coord[2] << std::endl;
+    // std::cout << render_triangle.C.coord[3] << std::endl;
+    // std::cout << std::endl;
+    // std::cout << std::endl;
 	}
 }
 
@@ -253,7 +299,7 @@ void Canvas::Print(){
 }
 
 void Canvas::ClearScreen(){
-	std::cout << "\033[2J\033[H";
+  std::cout << "\033[2J\033[H";
 }
 
 // TODO:

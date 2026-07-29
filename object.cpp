@@ -98,48 +98,20 @@ Object::Object(std::string pathToFile){
 		objTriangle.A = {vert[(vertex[0] - firstVertex) * 3], vert[(vertex[0] - firstVertex) * 3 + 1], vert[(vertex[0] - firstVertex) * 3 + 2], 1};
 		objTriangle.B = {vert[(vertex[1] - firstVertex) * 3], vert[(vertex[1] - firstVertex) * 3 + 1], vert[(vertex[1] - firstVertex) * 3 + 2], 1};
 		objTriangle.C = {vert[(vertex[2] - firstVertex) * 3], vert[(vertex[2] - firstVertex) * 3 + 1], vert[(vertex[2] - firstVertex) * 3 + 2], 1};
-    // objTriangle.A.x = vert[(vertex[0] - firstVertex) * 3];
-    // objTriangle.A.y = vert[(vertex[0] - firstVertex) * 3 + 1];
-    // objTriangle.A.z = vert[(vertex[0] - firstVertex) * 3 + 2];
 
-    // objTriangle.B.x = vert[(vertex[1] - firstVertex) * 3];
-    // objTriangle.B.y = vert[(vertex[1] - firstVertex) * 3 + 1];
-    // objTriangle.B.z = vert[(vertex[1] - firstVertex) * 3 + 2];
-    //
-    // objTriangle.C.x = vert[(vertex[2] - firstVertex) * 3];
-    // objTriangle.C.y = vert[(vertex[2] - firstVertex) * 3 + 1];
-    // objTriangle.C.z = vert[(vertex[2] - firstVertex) * 3 + 2];
-
-		objTriangle.normal = {faceNormal[(normal[0] - firstVertex) * 3], faceNormal[(normal[0] - firstVertex) * 3 + 1], faceNormal[(normal[0] - firstVertex) * 3 + 2], 1};
-    // objTriangle.normal.x = faceNormal[(normal[0] - firstVertex) * 3];
-    // objTriangle.normal.y = faceNormal[(normal[0] - firstVertex) * 3 + 1];
-    // objTriangle.normal.z = faceNormal[(normal[0] - firstVertex) * 3 + 2];
-
+		objTriangle.normal = {faceNormal[(normal[0] - firstVertex) * 3], faceNormal[(normal[0] - firstVertex) * 3 + 1], faceNormal[(normal[0] - firstVertex) * 3 + 2], 0};
 		normHelper = objTriangle.normal.Norm();
 		objTriangle.normal = {objTriangle.normal.coord[0]/normHelper, objTriangle.normal.coord[1]/normHelper, objTriangle.normal.coord[2]/normHelper, 1};
-    // objTriangle.normal.x = objTriangle.normal.x / objTriangle.normal.Norm();
-    // objTriangle.normal.y = objTriangle.normal.y / objTriangle.normal.Norm();
-    // objTriangle.normal.z = objTriangle.normal.z / objTriangle.normal.Norm();
-    
+
     tri.push_back(objTriangle);
     if(vertex.size() > 3){
       for(int i = 3; i < vertex.size(); i++){
         objTriangle.B = objTriangle.C;
 				objTriangle.C = {vert[(vertex[i] - firstVertex) * 3], vert[(vertex[i] - firstVertex) * 3 + 1], vert[(vertex[i] - firstVertex) * 3 + 2], 1};
-        // objTriangle.C.x = vert[(vertex[i] - firstVertex) * 3];
-        // objTriangle.C.y = vert[(vertex[i] - firstVertex) * 3 + 1];
-        // objTriangle.C.z = vert[(vertex[i] - firstVertex) * 3 + 2];
 
-				objTriangle.normal = {faceNormal[(normal[i] - firstVertex) * 3], faceNormal[(normal[i] - firstVertex) * 3 + 1], faceNormal[(normal[i] - firstVertex) * 3 + 2], 1};
-        // objTriangle.normal.x = faceNormal[(normal[i] - firstVertex) * 3];
-        // objTriangle.normal.y = faceNormal[(normal[i] - firstVertex) * 3 + 1];
-        // objTriangle.normal.z = faceNormal[(normal[i] - firstVertex) * 3 + 2];
-
+				objTriangle.normal = {faceNormal[(normal[i] - firstVertex) * 3], faceNormal[(normal[i] - firstVertex) * 3 + 1], faceNormal[(normal[i] - firstVertex) * 3 + 2], 0};
 				normHelper = objTriangle.normal.Norm();
 				objTriangle.normal = {objTriangle.normal.coord[0]/normHelper, objTriangle.normal.coord[1]/normHelper, objTriangle.normal.coord[2]/normHelper, 1};
-        // objTriangle.normal.x = objTriangle.normal.x / objTriangle.normal.Norm();
-        // objTriangle.normal.y = objTriangle.normal.y / objTriangle.normal.Norm();
-        // objTriangle.normal.z = objTriangle.normal.z / objTriangle.normal.Norm();
 
         tri.push_back(objTriangle);
       }

@@ -28,7 +28,7 @@ private:
 	std::vector<int> bw_color_code;
 	float fov;
 	float aspect_ratio;
-	Matrix transformations[8];
+	Matrix transformations[6];
 
 	bool CanDrawPixel(Triangle, Vec4);
 	bool AABB_Collision(int, int, int, int);

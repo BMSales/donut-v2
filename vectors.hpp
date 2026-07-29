@@ -77,18 +77,8 @@ struct Vec4 {
   }
 
   float Dot(Vec4 b){
-    return coord[0] * b.coord[0] + coord[1] * b.coord[1] + coord[2] * b.coord[2] + coord[3] * b.coord[3];
+    return (coord[0] * b.coord[0]) + (coord[1] * b.coord[1]) + (coord[2] * b.coord[2]) + (coord[3] * b.coord[3]);
   };
-
-	// Vec3 Cross(Vec3 b){
-	// 	Vec3 product;
-	//
-	// 	product.coord[0] = coord[1] * b.coord[2] - coord[2] * b.coord[1];
-	// 	product.coord[1] = - (coord[0] * b.coord[2] - coord[2] * b.coord[0]);
-	// 	product.coord[2] = coord[0] * b.coord[1] - coord[1] * b.coord[0];
-	//
-	// 	return product;
-	// }
 
   Vec4(){}
   Vec4(float _x, float _y, float _z, float _w){
@@ -103,6 +93,6 @@ struct Vec4 {
   }
 
   friend Vec4 operator- (Vec4 lhs, const Vec4& rhs){
-    return Vec4(lhs.coord[0] - rhs.coord[0], lhs.coord[1] - rhs.coord[1], lhs.coord[2] - rhs.coord[2], lhs.coord[3] + rhs.coord[3]);
+    return Vec4(lhs.coord[0] - rhs.coord[0], lhs.coord[1] - rhs.coord[1], lhs.coord[2] - rhs.coord[2], lhs.coord[3] - rhs.coord[3]);
   }
 };
