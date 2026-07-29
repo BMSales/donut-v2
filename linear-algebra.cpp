@@ -146,6 +146,14 @@ void Matrix::Print(){
 	std::cout << std::endl;
 }
 
+void Matrix::ScreenSpace(int width, int height){
+	this->Identity(4);
+	this->values[0][0] = 0.5 * (float)width;
+	this->values[1][1] = -0.5 * (float)height;
+	this->values[3][0] = 0.5 * (float)width;
+	this->values[3][1] = 0.5 * (float)height;
+}
+
 Matrix Matrix::Multiply(Matrix input){
 	if(this->cols != input.rows){
 		std::cout << "Matrices cannot be multiplied!" << std::endl;

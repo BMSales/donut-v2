@@ -17,7 +17,7 @@ public:
 
 	int GetHeight();
 	int GetWidth();
-	void SetTransformations(Matrix, Matrix, Matrix, Matrix, Matrix, Matrix);
+	void SetTransformations(Matrix, Matrix, Matrix, Matrix, Matrix, Matrix, Matrix);
 	void SetFOV(float);
 
 private:
@@ -28,13 +28,13 @@ private:
 	std::vector<int> bw_color_code;
 	float fov;
 	float aspect_ratio;
-	Matrix transformations[7];
+	Matrix transformations[8];
 
 	bool CanDrawPixel(Triangle, Vec4);
 	bool AABB_Collision(int, int, int, int);
 
 	int DepthMap(int, int);
-	int Lighting(Triangle, Vec4);
+	int Lighting(Triangle, Vec3);
 
 	float SignedTriangleArea(Triangle);
 	void DrawTriangle(Triangle);

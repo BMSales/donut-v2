@@ -21,6 +21,7 @@ public:
 	void RotationY(float angle);
 	void RotationZ(float angle);
 	void PerspectiveProjection(float fov, float aspect_ratio, float far, float near);
+	void ScreenSpace(int width, int height);
 
 	void Print();
 	Matrix Multiply(Matrix input);
