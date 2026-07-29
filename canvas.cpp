@@ -1,225 +1,301 @@
 #include <ctime>
 #include <iostream>
-#include <math.h>
-#include <stdlib.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
 #include "canvas.hpp"
+#include "linear-algebra.hpp"
 #include "object.hpp"
 #include "vectors.hpp"
 
 #define M_PI 3.14159265358979323846
 
 Canvas::Canvas(){
-  // retrieves the terminal's dimensions
-  struct winsize window;
-  // w.ws_row for rows
-  // w.ws_col for collumns
-  ioctl(STDIN_FILENO, TIOCGWINSZ, &window);
+	// retrieves the terminal's dimensions
+	struct winsize window;
+	// w.ws_row for rows
+	// w.ws_col for collumns
+	ioctl(STDIN_FILENO, TIOCGWINSZ, &window);
 
-  height = window.ws_row;
-  width = window.ws_col;
+	height = window.ws_row;
+	width = window.ws_col;
 
-  fov = 45.0;
-  aspect_ratio = (float)width/(float)height;
-  transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
+	fov = 45.0;
+	aspect_ratio = (float)width/(float)height;
 
-  screen.resize(height);
-  z_buffer.resize(height);
-  for(int i = 0; i < height; i++){
-    screen[i].resize(width);
-    z_buffer[i].resize(width);
-  }
-  for(int i = 232; i < 256; i++){
-    bw_color_code.push_back(i);
-  }
+	screen.resize(height);
+	z_buffer.resize(height);
+	for(int i = 0; i < height; i++){
+		screen[i].resize(width);
+		z_buffer[i].resize(width);
+	}
+	for(int i = 232; i < 256; i++){
+		bw_color_code.push_back(i);
+	}
+}
+
+int Canvas::GetHeight(){
+	return height;
+}
+
+int Canvas::GetWidth(){
+	return width;
+}
+
+void Canvas::SetTransformations(Matrix translation, Matrix scaling, Matrix rotationX, Matrix rotationY, Matrix rotationZ, Matrix projection, Matrix screenSpace){
+	Matrix product;
+  Matrix rotations;
+
+  rotations = rotationX.Multiply(rotationY);
+  rotations = rotations.Multiply(rotationZ);
+
+  product = rotations.Multiply(translation);
+	product = product.Multiply(scaling);
+	product = product.Multiply(projection);
+
+	transformations[0] = translation;
+	transformations[1] = scaling;
+	transformations[2] = rotations;
+	transformations[3] = projection;
+	transformations[4] = screenSpace;
+	transformations[5] = product;
 }
 
 void Canvas::SetFOV(float new_fov){
-  if(new_fov <= 0.0 || new_fov >= 180.0){
-    std::cout << "invalid angle" << std::endl;
-    exit(-1);
-  }
+	if(new_fov <= 0.0 || new_fov >= 180.0){
+		std::cout << "invalid angle" << std::endl;
+		exit(-1);
+	}
 
-  fov = new_fov;
-  transform = 1.0/( tanf((fov * M_PI/180.0)/2.0) );
+	fov = new_fov;
 }
 
 float Canvas::SignedTriangleArea(Triangle triangle){
-	Vec2 vertex_A = {triangle.A.x, triangle.A.y};
-	Vec2 vertex_B = {triangle.B.x, triangle.B.y};
-	Vec2 vertex_C = {triangle.C.x, triangle.C.y};
+	Vec2 vertex_A = {triangle.A.coord[0], triangle.A.coord[1]};
+	Vec2 vertex_B = {triangle.B.coord[0], triangle.B.coord[1]};
+	Vec2 vertex_C = {triangle.C.coord[0], triangle.C.coord[1]};
 
-  Vec2 vector_AB = vertex_B - vertex_A;
-  Vec2 vector_AP = vertex_C - vertex_A;
-  Vec2 rotated_AB = {-vector_AB.y, vector_AB.x};
+	Vec2 vector_AB = vertex_B - vertex_A;
+	Vec2 vector_AC = vertex_C - vertex_A;
+	Vec2 rotated_AB = {-vector_AB.coord[1], vector_AB.coord[0]};
 
-  float base = vector_AB.Norm();
-  float height = rotated_AB.Dot(vector_AP);
+	float base = vector_AB.Norm();
+	float height = rotated_AB.Dot(vector_AC);
 
-  return base * height/2;
+	return base * height/2.0;
 }
 
-bool Canvas::CanDrawPixel(Triangle screen_space_triangle, Vec3 position){
-  Triangle triangle_A = {screen_space_triangle.B, screen_space_triangle.C, position};
-  Triangle triangle_B = {screen_space_triangle.C, screen_space_triangle.A, position};
-  Triangle triangle_C = {screen_space_triangle.A, screen_space_triangle.B, position};
+bool Canvas::CanDrawPixel(Triangle triangle, Vec4 position){
+	Triangle triangle_A = {triangle.B, triangle.C, position};
+	Triangle triangle_B = {triangle.C, triangle.A, position};
+	Triangle triangle_C = {triangle.A, triangle.B, position};
 
-  float area_A = SignedTriangleArea(triangle_A);
-  float area_B = SignedTriangleArea(triangle_B);
-  float area_C = SignedTriangleArea(triangle_C);
-  float z_position = 0.0;
-  float one_over_z = 0.0;
+	float area_A = SignedTriangleArea(triangle_A);
+	float area_B = SignedTriangleArea(triangle_B);
+	float area_C = SignedTriangleArea(triangle_C);
+	float z_position = 0.0;
+	float one_over_z = 0.0;
 
-  if(area_A >= 0 && area_B >= 0 && area_C >= 0){
-		z_position = (screen_space_triangle.A.z * area_A + screen_space_triangle.B.z * area_B + screen_space_triangle.C.z * area_C)/(area_A + area_B + area_C);
+	if(area_A >= 0 && area_B >= 0 && area_C >= 0){
+		z_position = (triangle.A.coord[3] * area_A + triangle.B.coord[3] * area_B + triangle.C.coord[3] * area_C)/(area_A + area_B + area_C);
 		one_over_z = 1/z_position;
-		
-    if(one_over_z > z_buffer[position.y][position.x]){
-      z_buffer[position.y][position.x] = one_over_z;
-      return true;
-    }
-  }
 
-  return false;
-}
+		if(one_over_z > z_buffer[position.coord[1]][position.coord[0]]){
+			z_buffer[position.coord[1]][position.coord[0]] = one_over_z;
+			return true;
+		}
+	}
 
-Triangle Canvas::ScreenSpacePerspectiveProjection(Triangle triangle){
-  Triangle screen_space_triangle;
-
-  screen_space_triangle.A.x = triangle.A.x * transform/(aspect_ratio * triangle.A.z);
-  screen_space_triangle.A.y = triangle.A.y * transform/triangle.A.z;
-	screen_space_triangle.B.x = triangle.B.x * transform/(aspect_ratio * triangle.B.z);
-  screen_space_triangle.B.y = triangle.B.y * transform/triangle.B.z;
-	screen_space_triangle.C.x = triangle.C.x * transform/(aspect_ratio * triangle.C.z);
-  screen_space_triangle.C.y = triangle.C.y * transform/triangle.C.z;
-
-  screen_space_triangle.A.x = ((screen_space_triangle.A.x + 1.0)/2.0) * width;
-  screen_space_triangle.A.y = ((-screen_space_triangle.A.y + 1.0)/2.0) * height;
-	screen_space_triangle.B.x = ((screen_space_triangle.B.x + 1.0)/2.0) * width;
-  screen_space_triangle.B.y = ((-screen_space_triangle.B.y + 1.0)/2.0) * height;
-	screen_space_triangle.C.x = ((screen_space_triangle.C.x + 1.0)/2.0) * width;
-  screen_space_triangle.C.y = ((-screen_space_triangle.C.y + 1.0)/2.0) * height;
-
-	screen_space_triangle.A.z = triangle.A.z;
-	screen_space_triangle.B.z = triangle.B.z;
-	screen_space_triangle.C.z = triangle.C.z;
-
-  return screen_space_triangle;
+	return false;
 }
 
 bool Canvas::AABB_Collision(int min_x, int max_x, int min_y, int max_y){
-  if(min_x < width && max_x >= 0 && min_y < height && max_y >= 0){
-    return true;
-  }
-  return false;
+	if(min_x < width && max_x >= 0 && min_y < height && max_y >= 0){
+		return true;
+	}
+	return false;
 }
 
 int Canvas::DepthMap(int i, int j){
-  int code = (int)(z_buffer[i][j] * 23);
+	int code = (int)(z_buffer[i][j] * 23);
 
-  if(code >= 23){
-    return bw_color_code[22];
-  }
-  else {
-    return bw_color_code[code];
-  }
+	if(code >= 23){
+		return bw_color_code[22];
+	}
+	else {
+		return bw_color_code[code];
+	}
 }
 
 int Canvas::Lighting(Triangle triangle, Vec3 light){
-  float dot_product = triangle.normal.Dot(light);
-  if(dot_product < 0.0){
-    return bw_color_code[(int)(dot_product * -22)];
-  }
-  return 232;
+	Vec3 triangle_normal = {triangle.normal.coord[0], triangle.normal.coord[1], triangle.normal.coord[2]};
+	float dot_product = triangle_normal.Dot(light);
+	if(dot_product < 0.0){
+		return bw_color_code[(int)(dot_product * -22)];
+	}
+	return 232;
 }
 
-void Canvas::DrawTriangle(Triangle* triangle){
-	Triangle screen_space_triangle = ScreenSpacePerspectiveProjection(*triangle);
-  Vec3 light = {0.0, -1.0, 1.0};
-	Vec3 position;
+void Canvas::DrawTriangle(Triangle triangle){
+	Vec3 light = {0.0, -1.0, 1.0};
+	Vec4 position;
 
-	Vec3 AB = screen_space_triangle.B - screen_space_triangle.A;
-	Vec3 BC = screen_space_triangle.C - screen_space_triangle.B;
-  AB.z = 0.0;
-  BC.z = 0.0;
-	Vec3 triangle_normal_vector = AB.Cross(BC);
+	Vec4 AB = triangle.B - triangle.A;
+	Vec4 BC = triangle.C - triangle.B;
+	Vec3 AB_v3 = {AB.coord[0], AB.coord[1], AB.coord[2]};
+	Vec3 BC_v3 = {BC.coord[0], BC.coord[1], BC.coord[2]};
+
+	AB_v3.coord[2] = 0.0;
+	BC_v3.coord[2] = 0.0;
+
+	Vec3 triangle_normal_vector = AB_v3.Cross(BC_v3);
 	Vec3 camera_normal = {0.0, 0.0, 1.0};
 
 	if(triangle_normal_vector.Dot(camera_normal) < 0.0){
 		return;
 	}
-  light.x = light.x/light.Norm();
-  light.y = light.y/light.Norm();
-  light.z = light.z/light.Norm();
+	light.coord[0] = light.coord[0]/light.Norm();
+	light.coord[1] = light.coord[1]/light.Norm();
+	light.coord[2] = light.coord[2]/light.Norm();
 
-  int min_x = std::min(std::min(screen_space_triangle.A.x, screen_space_triangle.B.x), screen_space_triangle.C.x);
-  int max_x = std::max(std::max(screen_space_triangle.A.x, screen_space_triangle.B.x), screen_space_triangle.C.x);
-  int min_y = std::min(std::min(screen_space_triangle.A.y, screen_space_triangle.B.y), screen_space_triangle.C.y);
-  int max_y = std::max(std::max(screen_space_triangle.A.y, screen_space_triangle.B.y), screen_space_triangle.C.y);
+	int min_x = std::min(std::min(triangle.A.coord[0], triangle.B.coord[0]), triangle.C.coord[0]);
+	int max_x = std::max(std::max(triangle.A.coord[0], triangle.B.coord[0]), triangle.C.coord[0]);
+	int min_y = std::min(std::min(triangle.A.coord[1], triangle.B.coord[1]), triangle.C.coord[1]);
+	int max_y = std::max(std::max(triangle.A.coord[1], triangle.B.coord[1]), triangle.C.coord[1]);
 
-  if(!AABB_Collision(min_x, max_x, min_y, max_y)){
-    return;
-  }
-  else{
-    if(min_x < 0){
-      min_x = 0;
-    }
-    if(max_x > width - 1){
-      max_x = width - 1;
-    }
-    if(min_y < 0){
-      min_y = 0;
-    }
-    if(max_y > height - 1){
-      max_y = height - 1;
-    }
-  }
+	if(!AABB_Collision(min_x, max_x, min_y, max_y)){
+		return;
+	}
+	else{
+		if(min_x < 0){
+			min_x = 0;
+		}
+		if(max_x > width - 1){
+			max_x = width - 1;
+		}
+		if(min_y < 0){
+			min_y = 0;
+		}
+		if(max_y > height - 1){
+			max_y = height - 1;
+		}
+	}
 
-  for(int i = min_y; i <= max_y; i++){
-    position.y = i;
-    for(int j = min_x; j <= max_x; j++){
-      position.x = j;
-      if(CanDrawPixel(screen_space_triangle, position)){
-        screen[i][j] = Lighting((*triangle), light);
-      }
-    }
-  }
+	for(int i = min_y; i <= max_y; i++){
+		position.coord[1] = i;
+		for(int j = min_x; j <= max_x; j++){
+			position.coord[0] = j;
+			if(CanDrawPixel(triangle, position)){
+				screen[i][j] = Lighting(triangle, light);
+				// screen[i][j] = triangle.color_code;
+			}
+		}
+	}
 }
 
 void Canvas::DrawObject(Object* object){
   Triangle render_triangle;
+	float w1, w2, w3;
 
-  for(auto &triangle : (*object).tri){
-    render_triangle.A = triangle.A + object->GetOffset();
-    render_triangle.B = triangle.B + object->GetOffset();
-    render_triangle.C = triangle.C + object->GetOffset();
-    render_triangle.normal = triangle.normal;
-    render_triangle.color_code = triangle.color_code;
+	for(auto &triangle : (*object).tri){
+    //triangle get transformed by the combination of all transformations
+		render_triangle.A = transformations[5].Multiply(triangle.A);
+		render_triangle.B = transformations[5].Multiply(triangle.B);
+		render_triangle.C = transformations[5].Multiply(triangle.C);
 
-    DrawTriangle(&render_triangle);
-  }
+    //triangle normal gets rotated
+		render_triangle.normal = transformations[2].Multiply(triangle.normal);
+
+    //vertices get normalized after transformations
+		w1 = render_triangle.A.coord[3];
+		w2 = render_triangle.B.coord[3];
+		w3 = render_triangle.C.coord[3];
+		render_triangle.A = {render_triangle.A.coord[0]/w1, render_triangle.A.coord[1]/w1, render_triangle.A.coord[2]/w1, 1};
+		render_triangle.B = {render_triangle.B.coord[0]/w2, render_triangle.B.coord[1]/w2, render_triangle.B.coord[2]/w2, 1};
+		render_triangle.C = {render_triangle.C.coord[0]/w3, render_triangle.C.coord[1]/w3, render_triangle.C.coord[2]/w3, 1};
+
+    // triangle gets transformed into screen space
+		render_triangle.A = transformations[4].Multiply(render_triangle.A);
+		render_triangle.B = transformations[4].Multiply(render_triangle.B);
+		render_triangle.C = transformations[4].Multiply(render_triangle.C);
+
+		render_triangle.A = {render_triangle.A.coord[0], render_triangle.A.coord[1], render_triangle.A.coord[2], w1};
+		render_triangle.B = {render_triangle.B.coord[0], render_triangle.B.coord[1], render_triangle.B.coord[2], w2};
+		render_triangle.C = {render_triangle.C.coord[0], render_triangle.C.coord[1], render_triangle.C.coord[2], w3};
+
+		render_triangle.color_code = triangle.color_code;
+
+		DrawTriangle(render_triangle);
+
+    render_triangle.A = {0, 0, 0, 0};
+    render_triangle.B = {0, 0, 0, 0};
+    render_triangle.C = {0, 0, 0, 0};
+    render_triangle.normal = {0, 0, 0, 0};
+    render_triangle.color_code = 0;
+
+    // std::cout << "triangle A" << std::endl;
+    // std::cout << triangle.A.coord[0] << std::endl;
+    // std::cout << triangle.A.coord[1] << std::endl;
+    // std::cout << triangle.A.coord[2] << std::endl;
+    // std::cout << triangle.A.coord[3] << std::endl;
+    // std::cout << std::endl;
+    //
+    // std::cout << "triangle B" << std::endl;
+    // std::cout << triangle.B.coord[0] << std::endl;
+    // std::cout << triangle.B.coord[1] << std::endl;
+    // std::cout << triangle.B.coord[2] << std::endl;
+    // std::cout << triangle.B.coord[3] << std::endl;
+    // std::cout << std::endl;
+    //
+    // std::cout << "triangle C" << std::endl;
+    // std::cout << triangle.C.coord[0] << std::endl;
+    // std::cout << triangle.C.coord[1] << std::endl;
+    // std::cout << triangle.C.coord[2] << std::endl;
+    // std::cout << triangle.C.coord[3] << std::endl;
+    // std::cout << std::endl;
+    //
+    // std::cout << "render_triangle A" << std::endl;
+    // std::cout << render_triangle.A.coord[0] << std::endl;
+    // std::cout << render_triangle.A.coord[1] << std::endl;
+    // std::cout << render_triangle.A.coord[2] << std::endl;
+    // std::cout << render_triangle.A.coord[3] << std::endl;
+    // std::cout << std::endl;
+    //
+    // std::cout << "render_triangle B" << std::endl;
+    // std::cout << render_triangle.B.coord[0] << std::endl;
+    // std::cout << render_triangle.B.coord[1] << std::endl;
+    // std::cout << render_triangle.B.coord[2] << std::endl;
+    // std::cout << render_triangle.B.coord[3] << std::endl;
+    // std::cout << std::endl;
+    //
+    // std::cout << "render_triangle C" << std::endl;
+    // std::cout << render_triangle.C.coord[0] << std::endl;
+    // std::cout << render_triangle.C.coord[1] << std::endl;
+    // std::cout << render_triangle.C.coord[2] << std::endl;
+    // std::cout << render_triangle.C.coord[3] << std::endl;
+    // std::cout << std::endl;
+    // std::cout << std::endl;
+	}
 }
 
 void Canvas::Print(){
-  std::string line;
-  std::vector<std::string> lines;
-  for(int i = 0; i < height; i++){
-    for(int j = 0; j < width; j++){
-      line += "\033[38;5;" + std::to_string(screen[i][j]) + "m\u2588\033[0m";
-      screen[i][j] = 0;
-      z_buffer[i][j] = 0.0;
-    }
-    lines.push_back(line);
-    line.clear();
-  }
+	std::string line;
+	std::vector<std::string> lines;
+	for(int i = 0; i < height; i++){
+		for(int j = 0; j < width; j++){
+			line += "\033[38;5;" + std::to_string(screen[i][j]) + "m\u2588\033[0m";
+			screen[i][j] = 0;
+			z_buffer[i][j] = 0.0;
+		}
+		lines.push_back(line);
+		line.clear();
+	}
 
-  for (auto& l : lines) {
-    std::cout << l << '\n';
-  }
+	for (auto& l : lines) {
+		std::cout << l << '\n';
+	}
 
-  std::cout << std::flush;
+	std::cout << std::flush;
 }
 
 void Canvas::ClearScreen(){

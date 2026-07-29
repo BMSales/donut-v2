@@ -8,37 +8,27 @@
 typedef struct Triangle Triangle;
 
 struct Triangle {
-  Vec3 A;
-  Vec3 B;
-  Vec3 C;
-  Vec3 normal;
-  int color_code;
+	Vec4 A;
+	Vec4 B;
+	Vec4 C;
+	Vec4 normal;
+	int color_code;
 };
 
 class Object {
-  public:
-    std::vector<Triangle> tri;
-    
-    Object(std::string pathToFile);
+public:
+	std::vector<Triangle> tri;
 
-    void RotateX(float angle);
-    void RotateY(float angle);
-    void RotateZ(float angle);
+	Object(std::string pathToFile);
 
-    void SetRandomColors();
-    void SetOffset(Vec3 offset);
-    Vec3 GetOffset();
+	void SetRandomColors();
 
-  private:
-    Vec3 offset;
-    std::vector<float> vert;
-    std::vector<float> texture;
-    std::vector<float> faceNormal;
-    std::vector<std::vector<int>> vertIndex;
-    std::vector<std::vector<int>> textureIndex;
-    std::vector<std::vector<int>> normIndex;
+private:
+	std::vector<float> vert;
+	std::vector<float> texture;
+	std::vector<float> faceNormal;
+	std::vector<std::vector<int>> vertIndex;
+	std::vector<std::vector<int>> textureIndex;
+	std::vector<std::vector<int>> normIndex;
 
 };
-
-// TODO: 
-// optimize how vertices are stored
