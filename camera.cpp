@@ -1,4 +1,3 @@
-#include <ctime>
 #include <iostream>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -174,6 +173,7 @@ void Camera::DrawTriangle(Triangle triangle){
       if(CanDrawPixel(triangle, position)){
         screen[i][j] = Lighting(triangle, light);
         // screen[i][j] = triangle.color_code;
+        // screen[i][j] = DepthMap(i, j);
       }
     }
   }

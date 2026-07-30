@@ -1,5 +1,3 @@
-#include <cmath>
-#include <ctime>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
