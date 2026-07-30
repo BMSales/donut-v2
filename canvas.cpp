@@ -49,8 +49,8 @@ void Canvas::SetTransformations(Matrix translation, Matrix scaling, Matrix rotat
   rotations = rotationX.Multiply(rotationY);
   rotations = rotations.Multiply(rotationZ);
 
-  product = rotations.Multiply(translation);
-	product = product.Multiply(scaling);
+  product = scaling.Multiply(rotations);
+	product = product.Multiply(translation);
 	product = product.Multiply(projection);
 
 	transformations[0] = translation;
