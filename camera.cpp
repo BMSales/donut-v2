@@ -230,49 +230,6 @@ void Camera::DrawObject(Object* object){
     render_triangle.C = {0, 0, 0, 0};
     render_triangle.normal = {0, 0, 0, 0};
     render_triangle.color_code = 0;
-
-    // std::cout << "triangle A" << std::endl;
-    // std::cout << triangle.A.coord[0] << std::endl;
-    // std::cout << triangle.A.coord[1] << std::endl;
-    // std::cout << triangle.A.coord[2] << std::endl;
-    // std::cout << triangle.A.coord[3] << std::endl;
-    // std::cout << std::endl;
-    //
-    // std::cout << "triangle B" << std::endl;
-    // std::cout << triangle.B.coord[0] << std::endl;
-    // std::cout << triangle.B.coord[1] << std::endl;
-    // std::cout << triangle.B.coord[2] << std::endl;
-    // std::cout << triangle.B.coord[3] << std::endl;
-    // std::cout << std::endl;
-    //
-    // std::cout << "triangle C" << std::endl;
-    // std::cout << triangle.C.coord[0] << std::endl;
-    // std::cout << triangle.C.coord[1] << std::endl;
-    // std::cout << triangle.C.coord[2] << std::endl;
-    // std::cout << triangle.C.coord[3] << std::endl;
-    // std::cout << std::endl;
-    //
-    // std::cout << "render_triangle A" << std::endl;
-    // std::cout << render_triangle.A.coord[0] << std::endl;
-    // std::cout << render_triangle.A.coord[1] << std::endl;
-    // std::cout << render_triangle.A.coord[2] << std::endl;
-    // std::cout << render_triangle.A.coord[3] << std::endl;
-    // std::cout << std::endl;
-    //
-    // std::cout << "render_triangle B" << std::endl;
-    // std::cout << render_triangle.B.coord[0] << std::endl;
-    // std::cout << render_triangle.B.coord[1] << std::endl;
-    // std::cout << render_triangle.B.coord[2] << std::endl;
-    // std::cout << render_triangle.B.coord[3] << std::endl;
-    // std::cout << std::endl;
-    //
-    // std::cout << "render_triangle C" << std::endl;
-    // std::cout << render_triangle.C.coord[0] << std::endl;
-    // std::cout << render_triangle.C.coord[1] << std::endl;
-    // std::cout << render_triangle.C.coord[2] << std::endl;
-    // std::cout << render_triangle.C.coord[3] << std::endl;
-    // std::cout << std::endl;
-    // std::cout << std::endl;
   }
 }
 
