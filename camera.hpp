@@ -18,7 +18,6 @@ class Camera {
     int GetHeight();
     int GetWidth();
     void SetTransformations(Matrix, Matrix, Matrix, Matrix, Matrix, Matrix, Matrix);
-    void SetFOV(float);
 
   private:
     int height;
@@ -26,8 +25,6 @@ class Camera {
     std::vector<std::vector<int>> screen;
     std::vector<std::vector<float>> z_buffer;
     std::vector<int> bw_color_code;
-    float fov;
-    float aspect_ratio;
     Matrix transformations[6];
 
     bool CanDrawPixel(Triangle, Vec4);

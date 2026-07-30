@@ -18,9 +18,6 @@ Camera::Camera(){
   height = window.ws_row;
   width = window.ws_col;
 
-  fov = 45.0;
-  aspect_ratio = (float)width/(float)height;
-
   screen.resize(height);
   z_buffer.resize(height);
   for(int i = 0; i < height; i++){
@@ -57,15 +54,6 @@ void Camera::SetTransformations(Matrix translation, Matrix scaling, Matrix rotat
   transformations[3] = projection;
   transformations[4] = screenSpace;
   transformations[5] = product;
-}
-
-void Camera::SetFOV(float new_fov){
-  if(new_fov <= 0.0 || new_fov >= 180.0){
-    std::cout << "invalid angle" << std::endl;
-    exit(-1);
-  }
-
-  fov = new_fov;
 }
 
 float Camera::SignedTriangleArea(Triangle triangle){
