@@ -256,6 +256,3 @@ void Camera::Print(){
 void Camera::ClearScreen(){
   std::cout << "\033[2J\033[H";
 }
-
-// TODO:
-// check if a triangle is facing the camera or not before trying to draw it
