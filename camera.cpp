@@ -3,14 +3,12 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#include "canvas.hpp"
+#include "camera.hpp"
 #include "linear-algebra.hpp"
 #include "object.hpp"
 #include "vectors.hpp"
 
-#define M_PI 3.14159265358979323846
-
-Canvas::Canvas(){
+Camera::Camera(){
 	// retrieves the terminal's dimensions
 	struct winsize window;
 	// w.ws_row for rows
@@ -34,15 +32,15 @@ Canvas::Canvas(){
 	}
 }
 
-int Canvas::GetHeight(){
+int Camera::GetHeight(){
 	return height;
 }
 
-int Canvas::GetWidth(){
+int Camera::GetWidth(){
 	return width;
 }
 
-void Canvas::SetTransformations(Matrix translation, Matrix scaling, Matrix rotationX, Matrix rotationY, Matrix rotationZ, Matrix projection, Matrix screenSpace){
+void Camera::SetTransformations(Matrix translation, Matrix scaling, Matrix rotationX, Matrix rotationY, Matrix rotationZ, Matrix projection, Matrix screenSpace){
 	Matrix product;
   Matrix rotations;
 
@@ -61,7 +59,7 @@ void Canvas::SetTransformations(Matrix translation, Matrix scaling, Matrix rotat
 	transformations[5] = product;
 }
 
-void Canvas::SetFOV(float new_fov){
+void Camera::SetFOV(float new_fov){
 	if(new_fov <= 0.0 || new_fov >= 180.0){
 		std::cout << "invalid angle" << std::endl;
 		exit(-1);
@@ -70,7 +68,7 @@ void Canvas::SetFOV(float new_fov){
 	fov = new_fov;
 }
 
-float Canvas::SignedTriangleArea(Triangle triangle){
+float Camera::SignedTriangleArea(Triangle triangle){
 	Vec2 vertex_A = {triangle.A.coord[0], triangle.A.coord[1]};
 	Vec2 vertex_B = {triangle.B.coord[0], triangle.B.coord[1]};
 	Vec2 vertex_C = {triangle.C.coord[0], triangle.C.coord[1]};
@@ -85,7 +83,7 @@ float Canvas::SignedTriangleArea(Triangle triangle){
 	return base * height/2.0;
 }
 
-bool Canvas::CanDrawPixel(Triangle triangle, Vec4 position){
+bool Camera::CanDrawPixel(Triangle triangle, Vec4 position){
 	Triangle triangle_A = {triangle.B, triangle.C, position};
 	Triangle triangle_B = {triangle.C, triangle.A, position};
 	Triangle triangle_C = {triangle.A, triangle.B, position};
@@ -109,14 +107,14 @@ bool Canvas::CanDrawPixel(Triangle triangle, Vec4 position){
 	return false;
 }
 
-bool Canvas::AABB_Collision(int min_x, int max_x, int min_y, int max_y){
+bool Camera::AABB_Collision(int min_x, int max_x, int min_y, int max_y){
 	if(min_x < width && max_x >= 0 && min_y < height && max_y >= 0){
 		return true;
 	}
 	return false;
 }
 
-int Canvas::DepthMap(int i, int j){
+int Camera::DepthMap(int i, int j){
 	int code = (int)(z_buffer[i][j] * 23);
 
 	if(code >= 23){
@@ -127,7 +125,7 @@ int Canvas::DepthMap(int i, int j){
 	}
 }
 
-int Canvas::Lighting(Triangle triangle, Vec3 light){
+int Camera::Lighting(Triangle triangle, Vec3 light){
 	Vec3 triangle_normal = {triangle.normal.coord[0], triangle.normal.coord[1], triangle.normal.coord[2]};
 	float dot_product = triangle_normal.Dot(light);
 	if(dot_product < 0.0){
@@ -136,7 +134,7 @@ int Canvas::Lighting(Triangle triangle, Vec3 light){
 	return 232;
 }
 
-void Canvas::DrawTriangle(Triangle triangle){
+void Camera::DrawTriangle(Triangle triangle){
 	Vec3 light = {0.0, -1.0, 1.0};
 	Vec4 position;
 
@@ -193,7 +191,7 @@ void Canvas::DrawTriangle(Triangle triangle){
 	}
 }
 
-void Canvas::DrawObject(Object* object){
+void Camera::DrawObject(Object* object){
   Triangle render_triangle;
 	float w1, w2, w3;
 
@@ -278,7 +276,7 @@ void Canvas::DrawObject(Object* object){
 	}
 }
 
-void Canvas::Print(){
+void Camera::Print(){
 	std::string line;
 	std::vector<std::string> lines;
 	for(int i = 0; i < height; i++){
@@ -298,7 +296,7 @@ void Canvas::Print(){
 	std::cout << std::flush;
 }
 
-void Canvas::ClearScreen(){
+void Camera::ClearScreen(){
   std::cout << "\033[2J\033[H";
 }
 

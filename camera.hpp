@@ -7,9 +7,9 @@
 #include "linear-algebra.hpp"
 #include "object.hpp"
 
-class Canvas {
+class Camera {
 public:
-	Canvas();
+	Camera();
 
 	void DrawObject(Object*);
 	void Print();
