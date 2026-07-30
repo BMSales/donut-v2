@@ -8,27 +8,27 @@
 typedef struct Triangle Triangle;
 
 struct Triangle {
-	Vec4 A;
-	Vec4 B;
-	Vec4 C;
-	Vec4 normal;
-	int color_code;
+  Vec4 A;
+  Vec4 B;
+  Vec4 C;
+  Vec4 normal;
+  int color_code;
 };
 
 class Object {
-public:
-	std::vector<Triangle> tri;
+  public:
+    std::vector<Triangle> tri;
 
-	Object(std::string pathToFile);
+    Object(std::string pathToFile);
 
-	void SetRandomColors();
+    void SetRandomColors();
 
-private:
-	std::vector<float> vert;
-	std::vector<float> texture;
-	std::vector<float> faceNormal;
-	std::vector<std::vector<int>> vertIndex;
-	std::vector<std::vector<int>> textureIndex;
-	std::vector<std::vector<int>> normIndex;
+  private:
+    std::vector<float> vert;
+    std::vector<float> texture;
+    std::vector<float> faceNormal;
+    std::vector<std::vector<int>> vertIndex;
+    std::vector<std::vector<int>> textureIndex;
+    std::vector<std::vector<int>> normIndex;
 
 };

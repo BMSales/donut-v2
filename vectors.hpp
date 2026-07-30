@@ -7,7 +7,7 @@ typedef struct Vec3 Vec3;
 typedef struct Vec4 Vec4;
 
 struct Vec2 {
-	float coord[2];
+  float coord[2];
 
   float Norm(){
     return std::sqrt(std::pow(coord[0], 2) + std::pow(coord[1], 2));
@@ -33,7 +33,7 @@ struct Vec2 {
 };
 
 struct Vec3 {
-	float coord[3];
+  float coord[3];
 
   float Norm(){
     return std::sqrt(std::pow(coord[0], 2) + std::pow(coord[1], 2) + std::pow(coord[2], 2));
@@ -43,15 +43,15 @@ struct Vec3 {
     return coord[0] * b.coord[0] + coord[1] * b.coord[1] + coord[2] * b.coord[2];
   };
 
-	Vec3 Cross(Vec3 b){
-		Vec3 product;
+  Vec3 Cross(Vec3 b){
+    Vec3 product;
 
-		product.coord[0] = coord[1] * b.coord[2] - coord[2] * b.coord[1];
-		product.coord[1] = - (coord[0] * b.coord[2] - coord[2] * b.coord[0]);
-		product.coord[2] = coord[0] * b.coord[1] - coord[1] * b.coord[0];
+    product.coord[0] = coord[1] * b.coord[2] - coord[2] * b.coord[1];
+    product.coord[1] = - (coord[0] * b.coord[2] - coord[2] * b.coord[0]);
+    product.coord[2] = coord[0] * b.coord[1] - coord[1] * b.coord[0];
 
-		return product;
-	}
+    return product;
+  }
 
   Vec3(){}
   Vec3(float _x, float _y, float _z){
@@ -70,7 +70,7 @@ struct Vec3 {
 };
 
 struct Vec4 {
-	float coord[4];
+  float coord[4];
 
   float Norm(){
     return std::sqrt(std::pow(coord[0], 2) + std::pow(coord[1], 2) + std::pow(coord[2], 2) + std::pow(coord[3], 2));
