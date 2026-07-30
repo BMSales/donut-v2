@@ -28,11 +28,11 @@ int main(int argc, char* argv[]){
   float near = 1.0;
   float z = 3.0;
 
-  Matrix translation = Matrix();
   Matrix scaling = Matrix();
   Matrix rotationX = Matrix();
   Matrix rotationY = Matrix();
   Matrix rotationZ = Matrix();
+  Matrix translation = Matrix();
   Matrix perspectiveProj = Matrix();
   Matrix screenSpace = Matrix();
 
